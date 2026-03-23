@@ -42,9 +42,9 @@
         <!-- 结果展示区域 -->
         <div v-if="loading || analysisResult">
           <ResultViewer
-            v-if="analysisResult && analysisResult.content"
+            v-if="analysisResult && analysisResult.content && selectedAnalysisType"
             :result="analysisResult"
-            :analysis-type="selectedAnalysisType"
+            :analysis-type="selectedAnalysisType!"
             @reset="onReset"
           />
 
