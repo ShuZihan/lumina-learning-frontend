@@ -47,6 +47,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { getApiUrl } from '../utils/api'
 
 const emit = defineEmits<{
   'course-selected': [filename: string]
@@ -65,7 +66,7 @@ const selectedCourse = ref<string | null>(null)
 
 const loadCourses = async () => {
   try {
-    const response = await fetch('/api/courses')
+    const response = await fetch(getApiUrl('/api/courses'))
     const data = await response.json()
     courses.value = data.courses
   } catch (error) {

@@ -67,6 +67,7 @@ import { ref } from 'vue'
 import CourseSelector from './components/CourseSelector.vue'
 import FunctionSelector from './components/FunctionSelector.vue'
 import ResultViewer from './components/ResultViewer.vue'
+import { getApiUrl } from './utils/api'
 
 const selectedCourse = ref<string | null>(null)
 const selectedAnalysisType = ref<string | null>(null)
@@ -84,7 +85,7 @@ const onAnalysisStart = async (filename: string, analysisType: string) => {
   analysisResult.value = null
 
   try {
-    const response = await fetch('/api/analyze', {
+    const response = await fetch(getApiUrl('/api/analyze'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
