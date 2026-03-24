@@ -9,47 +9,124 @@
 }
 
 body {
-    background: linear-gradient(135deg,
-        #e0f2fe 0%,   /* light blue */
-        #f0f9ff 25%,  /* lighter blue */
-        #e0e7ff 50%, /* light indigo */
-        #f5f3ff 75%, /* light purple */
-        #fefce8 100% /* light yellow */
-    );
+    /* 真实素描纸/打印纸质感 */
+    background-color: #f3ede0; /* 暖米黄色道林纸底色 */
+    background-image:
+        /* 第一层：细纤维纹理 */
+        url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='0.95 1'/%3E%3CfeFuncG type='table' tableValues='0.95 1'/%3E%3CfeFuncB type='table' tableValues='0.95 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.15'/%3E%3C/svg%3E"),
+        /* 第二层：细微凹凸纹理 */
+        url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='rough'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02' numOctaves='5' stitchTiles='stitch'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23f3ede0' filter='url(%23rough)' opacity='0.2'/%3E%3C/svg%3E");
+    background-size: 100px 100px, 400px 400px;
+    background-repeat: repeat;
+    /* 柔和暗角 */
+    box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.04);
     min-height: 100vh;
 }
 
-/* 基础毛玻璃面板 - 用于表单、弹窗 */
+/* 全局滚动条样式 - 扩大可触发区域 */
+::-webkit-scrollbar {
+    width: 16px !important; /* 增加整体宽度，扩大可点击区域 */
+    height: 16px !important;
+    background: transparent !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: transparent !important; /* 默认完全透明，隐藏 */
+    border-radius: 6px !important; /* 更大圆角，完全圆润 */
+    transition: none !important; /* 移除过渡，立刻显示 */
+    border: 5px solid transparent !important; /* 透明边框，视觉上让滚动条变细，但实际可点击区域是全宽 */
+    background-clip: content-box !important; /* 只在中间区域显示颜色 */
+}
+
+/* PC端：只有hover容器时显示滚动条，性能更高 */
+main:hover::-webkit-scrollbar-thumb,
+aside:hover .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #e9e3d8 !important; /* 非常淡的颜色，和纸张融合 */
+    background-clip: content-box !important;
+}
+
+/* hover滚动条本身时颜色稍深 - 整个16px宽度都能触发 */
+::-webkit-scrollbar-thumb:hover {
+    background: #dcd2c3 !important; /* 稍深一点，反馈清晰 */
+    background-clip: content-box !important;
+}
+
+/* Firefox 兼容 */
+main {
+    scrollbar-color: transparent transparent;
+    transition: none !important;
+}
+
+main:hover {
+    scrollbar-color: #e9e3d8 transparent;
+}
+
+aside .overflow-y-auto {
+    scrollbar-color: transparent transparent;
+    transition: none !important;
+}
+
+aside:hover .overflow-y-auto {
+    scrollbar-color: #e9e3d8 transparent;
+}
+
+/* Firefox兼容 */
+main {
+    scrollbar-color: #b9a992 transparent;
+    scrollbar-width: auto;
+    padding-right: 4px; /* 减小右边距 */
+}
+
+aside .overflow-y-auto {
+    scrollbar-color: #b9a992 transparent;
+    scrollbar-width: auto;
+}
+
+/* 基础纸张面板 - 用于表单、弹窗 */
 .glass {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+    background: rgba(255, 254, 251, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(210, 202, 190, 0.8);
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9); /* 顶部高光，模拟纸张厚度 */
 }
 
-/* 导航栏 - 更强的模糊和透明度 */
+/* 导航栏 - 同材质叠纸效果，和背景纸张材质颜色完全一致 */
 .glass-nav {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: #f3ede0; /* 和背景完全相同的纸张底色 */
+    background-image: inherit; /* 继承背景的纸张纹理 */
+    background-size: inherit;
+    border-bottom: 1px solid #d9d0bf;
+    /* 保持叠纸阴影效果，只是材质颜色和背景统一 */
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.07),
+        0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-/* 卡片 - 适合功能卡片、内容卡片 */
+/* 卡片 - 纸质卡片效果 */
 .glass-card {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 24px rgba(31, 38, 135, 0.08);
+    background: rgba(255, 254, 251, 0.93);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(210, 202, 190, 0.8);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9); /* 顶部高光 */
     transition: all 0.3s ease;
 }
 
 .glass-card:hover {
-    background: rgba(255, 255, 255, 0.6);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.15);
+    background: rgba(255, 254, 251, 0.98);
+    transform: translateY(-5px);
+    box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 /* 按钮样式 */
@@ -72,7 +149,7 @@ body {
     animation: float 6s ease-in-out infinite;
 }
 
-/* Markdown 样式 */
+/* Markdown 样式（适配纸质背景） */
 .markdown-content {
     line-height: 1.8;
 }
@@ -83,7 +160,7 @@ body {
     font-weight: 600;
     margin-top: 1.5rem;
     margin-bottom: 1rem;
-    color: #1e293b;
+    color: #2c261e; /* 暖黑色，更像印刷文字 */
 }
 
 .markdown-content h1 { font-size: 1.8rem; }
@@ -92,7 +169,7 @@ body {
 
 .markdown-content p {
     margin-bottom: 1rem;
-    color: #475569;
+    color: #504a40; /* 暖深灰色，阅读更舒适 */
 }
 
 .markdown-content ul,
@@ -103,21 +180,24 @@ body {
 
 .markdown-content li {
     margin-bottom: 0.5rem;
-    color: #475569;
+    color: #504a40; /* 暖深灰色 */
 }
 
 .markdown-content code {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(248, 245, 240, 0.9);
     padding: 0.2rem 0.4rem;
     border-radius: 0.3rem;
+    border: 1px solid rgba(210, 202, 190, 0.5);
     font-family: monospace;
     font-size: 0.9rem;
 }
 
 .markdown-content pre {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(248, 245, 240, 0.9);
     padding: 1rem;
     border-radius: 0.5rem;
+    border: 1px solid rgba(210, 202, 190, 0.6);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
     overflow-x: auto;
     margin-bottom: 1rem;
 }
