@@ -85,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import CourseSelector from './components/CourseSelector.vue'
 import FunctionSelector from './components/FunctionSelector.vue'
 import ResultViewer from './components/ResultViewer.vue'
