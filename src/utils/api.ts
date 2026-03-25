@@ -15,3 +15,8 @@ export const getApiUrl = (path: string): string => {
     return `${apiBaseUrl}${path}`
   }
 }
+
+export const getAuthHeaders = (): Record<string, string> => {
+  const token = localStorage.getItem('token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
