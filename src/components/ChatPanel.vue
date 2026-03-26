@@ -136,18 +136,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
-import { marked } from 'marked'
-import DOMPurify from 'dompurify'
-import markedKatex from 'marked-katex-extension'
-import 'katex/dist/katex.min.css'
-
-marked.use(markedKatex({ throwOnError: false }))
-
-function normalizeLatex(content: string): string {
-  return content
-    .replace(/\\\[/g, '$$').replace(/\\\]/g, '$$')
-    .replace(/\\\(/g, '$').replace(/\\\)/g, '$')
-}
+import { renderMarkdown } from '../utils/markdown'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
 
 interface Message {
@@ -195,10 +184,7 @@ const analysisTypeText = computed(() => {
 })
 
 const renderMd = (content: string): string => {
-  return DOMPurify.sanitize(marked.parse(normalizeLatex(content || '')) as string, {
-    ADD_TAGS: ['math', 'semantics', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac', 'msubsup', 'mover', 'munder', 'mspace', 'mtable', 'mtr', 'mtd', 'annotation'],
-    ADD_ATTR: ['xmlns', 'display'],
-  })
+  return renderMarkdown(content || '')
 }
 
 const scrollToBottom = async () => {
