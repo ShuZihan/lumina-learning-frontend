@@ -2,8 +2,10 @@
   <div class="min-h-screen flex items-center justify-center px-4">
     <div class="glass rounded-3xl p-10 w-full max-w-md text-center shadow-xl">
       <!-- Logo -->
-      <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg animate-float">
-        <span class="text-white text-3xl font-bold">✨</span>
+      <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center shadow-lg">
+        <svg class="w-9 h-9 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/>
+        </svg>
       </div>
 
       <h1 class="text-2xl font-bold text-gray-800 mb-2">欢迎使用 Lumina Learning</h1>
