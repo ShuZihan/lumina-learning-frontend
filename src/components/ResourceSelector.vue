@@ -32,17 +32,21 @@
 
     <!-- 滑动面板 -->
     <div
-      class="flex flex-col overflow-hidden transition-[width] duration-150 ease-in-out border-r border-black/[0.06]"
+      class="relative flex flex-col overflow-hidden transition-[width] duration-150 ease-in-out border-r border-black/[0.06]"
       :style="{ width: panelOpen ? panelWidth + 'px' : '0px' }"
       style="background-color: #ffffff;"
     >
+      <!-- 顶部刷新进度条 -->
+      <div v-if="loading" class="absolute top-0 left-0 right-0 h-0.5 overflow-hidden z-10">
+        <div class="h-full bg-blue-500 sidebar-loading-bar"></div>
+      </div>
       <!-- 文件树 -->
       <div class="flex-1 overflow-y-auto p-2" :style="{ minWidth: panelWidth + 'px' }">
         <!-- 顶部工具栏 -->
-        <div v-if="!auth.isGuest" class="flex items-center gap-0.5 mb-1 px-1">
+        <div class="flex items-center gap-0.5 mb-1 px-1">
           <button
-            @click="showUploadModal = true"
-            title="上传资源"
+            @click="auth.isGuest ? router.push('/login') : showUploadModal = true"
+            :title="auth.isGuest ? '登录后可上传资源' : '上传资源'"
             class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-500 hover:bg-gray-100 transition-all"
           >
             <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -50,6 +54,18 @@
             </svg>
           </button>
           <button
+            @click="loadResources"
+            title="刷新文件列表"
+            :class="loading ? 'animate-spin text-blue-400' : 'text-gray-400 hover:text-blue-500 hover:bg-gray-100'"
+            class="w-6 h-6 flex items-center justify-center rounded transition-all"
+          >
+            <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+          </button>
+          <button
+            v-if="!auth.isGuest"
             @click="selectedResourceObj && canDelete(selectedResourceObj) && deleteResource(selectedResourceObj)"
             title="删除选中文件"
             :disabled="!selectedResourceObj || !canDelete(selectedResourceObj)"
@@ -66,13 +82,7 @@
           </button>
         </div>
 
-        <div v-if="loading" class="text-center py-8">
-          <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p class="text-gray-500 text-sm">加载中...</p>
-        </div>
-
-        <template v-else>
-          <!-- public/ 文件夹 -->
+        <!-- public/ 文件夹 -->
           <div class="mb-0.5">
             <button
               @click="publicOpen = !publicOpen"
@@ -125,7 +135,6 @@
               </div>
             </div>
           </div>
-        </template>
       </div>
 
     </div>
@@ -196,6 +205,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
 import { useAuthStore } from '../stores/auth'
 
@@ -204,6 +214,7 @@ const emit = defineEmits<{
 }>()
 
 const auth = useAuthStore()
+const router = useRouter()
 const isMobile = ref(window.innerWidth < 768)
 
 // 面板开关状态（桌面默认展开，移动端默认收起）

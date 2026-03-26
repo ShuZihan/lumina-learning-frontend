@@ -13,7 +13,10 @@ export interface User {
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'))
-  const user = ref<User | null>(null)
+
+  // 从缓存恢复用户信息，避免刷新时出现短暂空白
+  const cachedUser = localStorage.getItem('user')
+  const user = ref<User | null>(cachedUser ? JSON.parse(cachedUser) : null)
 
   const isAuthenticated = computed(() => !!token.value)
   const isAdmin = computed(() => user.value?.role === 'admin')
@@ -32,6 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
       })
       if (resp.ok) {
         user.value = await resp.json()
+        localStorage.setItem('user', JSON.stringify(user.value))
       } else {
         logout()
       }
@@ -44,9 +48,10 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     user.value = null
     localStorage.removeItem('token')
+    localStorage.removeItem('user')
   }
 
-  // 初始化时如果有 token 就拉取用户信息
+  // 初始化时如果有 token 就在后台静默刷新用户信息
   if (token.value) {
     fetchUser()
   }
