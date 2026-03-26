@@ -1,28 +1,30 @@
 <template>
   <div class="mb-8">
     <div class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-xl bg-emerald-100/80 flex items-center justify-center">
-          <span class="text-emerald-500 text-xl">📊</span>
-        </div>
-        <div>
-          <h3 class="text-2xl font-bold text-gray-800">{{ analysisTypeText }}</h3>
-          <p class="text-gray-500 text-sm">分析完成，点击下载按钮可以保存结果</p>
-        </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 tracking-tight">{{ analysisTypeText }}</h3>
+        <p class="text-gray-400 text-sm mt-0.5">分析完成，可下载保存结果</p>
       </div>
-      <div class="flex gap-3">
+      <div class="flex gap-2">
         <button
           @click="downloadResult"
-          class="px-4 py-2 rounded-xl bg-white/60 border border-white/40 text-gray-700 font-medium hover:bg-white/80 transition-all flex items-center gap-2"
+          class="px-3.5 py-1.5 rounded-lg bg-white/60 border border-[#e2dacc] text-gray-600 text-sm hover:bg-white/90 transition-all flex items-center gap-1.5"
         >
-          <span>💾</span>
-          下载 Markdown
+          <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          下载
         </button>
         <button
           @click="emit('reset')"
-          class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all flex items-center gap-2"
+          class="px-3.5 py-1.5 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-all flex items-center gap-1.5"
         >
-          <span>↻</span>
+          <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+          </svg>
           重新分析
         </button>
       </div>

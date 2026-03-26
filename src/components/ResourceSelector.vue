@@ -12,38 +12,29 @@
     class="flex h-full flex-shrink-0 z-[60]"
     :class="isMobile ? 'fixed left-0 top-0 h-screen' : 'relative'"
   >
-    <!-- 纸张折痕分界线（整个 aside 右边缘） -->
-    <div class="absolute top-0 right-0 w-[3px] h-full z-10 pointer-events-none">
-      <div class="absolute left-0 top-0 h-full w-[1px] bg-[#d9d1bf]"></div>
-      <div class="absolute left-[1px] top-0 h-full w-[2px] bg-[rgba(255,255,255,0.6)]"></div>
-    </div>
-
-
     <!-- 桌面端图标条 -->
     <div
-      class="hidden md:flex w-10 flex-shrink-0 flex-col items-center pt-2 relative"
-      style="background-color: #f3ede0;"
+      class="hidden md:flex w-10 flex-shrink-0 flex-col items-center pt-2 relative border-r border-black/[0.06]"
+      style="background-color: #ffffff;"
     >
       <button
         @click="panelOpen = !panelOpen"
         class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
-        :class="panelOpen ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600 hover:bg-white/60'"
+        :class="panelOpen ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'"
         :title="panelOpen ? '收起侧边栏' : '展开侧边栏'"
       >
-        <span class="text-lg">📚</span>
+        <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <line x1="9" y1="3" x2="9" y2="21"/>
+        </svg>
       </button>
-      <!-- 图标条与面板之间的小刻痕 -->
-      <div class="absolute top-0 right-0 h-full w-[2px] pointer-events-none">
-        <div class="absolute inset-0 w-[1px] bg-[#d9d1bf]"></div>
-        <div class="absolute left-[1px] inset-y-0 w-[1px] bg-[rgba(255,255,255,0.5)]"></div>
-      </div>
     </div>
 
     <!-- 滑动面板 -->
     <div
-      class="flex flex-col overflow-hidden transition-[width] duration-150 ease-in-out"
+      class="flex flex-col overflow-hidden transition-[width] duration-150 ease-in-out border-r border-black/[0.06]"
       :style="{ width: panelOpen ? panelWidth + 'px' : '0px' }"
-      style="background-color: #f3ede0; background-image: inherit; background-size: inherit;"
+      style="background-color: #ffffff;"
     >
       <!-- 文件树 -->
       <div class="flex-1 overflow-y-auto p-2" :style="{ minWidth: panelWidth + 'px' }">
@@ -52,8 +43,12 @@
           <button
             @click="showUploadModal = true"
             title="上传资源"
-            class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-500 hover:bg-white/60 transition-all text-base"
-          >+</button>
+            class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-500 hover:bg-gray-100 transition-all"
+          >
+            <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
           <button
             @click="selectedResourceObj && canDelete(selectedResourceObj) && deleteResource(selectedResourceObj)"
             title="删除选中文件"
@@ -83,8 +78,8 @@
               @click="publicOpen = !publicOpen"
               class="w-full flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium text-gray-500 hover:bg-white/40 transition-all"
             >
-              <span class="text-[10px] transition-transform duration-150 inline-block" :class="publicOpen ? 'rotate-90' : ''">▶</span>
-              <span>📁</span>
+              <svg style="width:10px;height:10px" class="transition-transform duration-150 flex-shrink-0" :class="publicOpen ? 'rotate-90' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              <svg style="width:13px;height:13px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
               <span class="text-gray-600">public</span>
               <span class="ml-auto text-gray-400 font-normal">{{ publicFiles.length }}</span>
             </button>
@@ -97,7 +92,7 @@
                 :class="selectedResource === resource.filename ? 'bg-blue-500/20' : 'hover:bg-white/40'"
                 @click="selectResource(resource)"
               >
-                <span class="text-sm flex-shrink-0">{{ getFileIcon(resource.file_type) }}</span>
+                <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 <span class="text-xs text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
                 <span class="text-[10px] text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
               </div>
@@ -110,8 +105,8 @@
               @click="mineOpen = !mineOpen"
               class="w-full flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium text-gray-500 hover:bg-white/40 transition-all"
             >
-              <span class="text-[10px] transition-transform duration-150 inline-block" :class="mineOpen ? 'rotate-90' : ''">▶</span>
-              <span>📁</span>
+              <svg style="width:10px;height:10px" class="transition-transform duration-150 flex-shrink-0" :class="mineOpen ? 'rotate-90' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              <svg style="width:13px;height:13px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
               <span class="text-gray-600">我的文件</span>
               <span class="ml-auto text-gray-400 font-normal">{{ myFiles.length }}</span>
             </button>
@@ -124,7 +119,7 @@
                 :class="selectedResource === resource.filename ? 'bg-blue-500/20' : 'hover:bg-white/40'"
                 @click="selectResource(resource)"
               >
-                <span class="text-sm flex-shrink-0">{{ getFileIcon(resource.file_type) }}</span>
+                <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 <span class="text-xs text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
                 <span class="text-[10px] text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
               </div>
@@ -164,7 +159,7 @@
                 <li
                   v-for="(f, i) in uploadForm.files"
                   :key="i"
-                  class="flex items-center gap-1 text-xs text-gray-600 bg-white/60 border border-[#e2dacc] rounded px-1.5 py-0.5"
+                  class="flex items-center gap-1 text-xs text-gray-600 bg-white/60 border border-[#d1d7dc] rounded px-1.5 py-0.5"
                 >
                   <span class="max-w-[120px] truncate">{{ f.name }}</span>
                   <span class="text-gray-400 flex-shrink-0">{{ formatFileSize(f.size) }}</span>
@@ -178,7 +173,7 @@
                 v-model="uploadForm.tags"
                 type="text"
                 placeholder="例如：数学, 高中, 代数"
-                class="w-full px-3 py-2 rounded-lg bg-white/60 border border-[#e2dacc] text-sm text-gray-700 focus:outline-none focus:border-blue-400"
+                class="w-full px-3 py-2 rounded-lg bg-white/60 border border-[#d1d7dc] text-sm text-gray-700 focus:outline-none focus:border-blue-400"
               />
             </div>
             <div v-if="auth.isAdmin" class="flex items-center gap-3 p-3 rounded-lg bg-amber-50/80 border border-amber-200/50">
@@ -188,7 +183,7 @@
             <p v-else class="text-xs text-gray-400 bg-white/40 rounded-lg px-3 py-2">上传的资源为私有，仅您本人可见。</p>
           </div>
           <div class="flex gap-3 mt-6">
-            <button @click="closeUploadModal" class="flex-1 py-2 rounded-xl bg-white/50 text-gray-600 text-sm font-medium hover:bg-white/80 transition-all border border-[#e2dacc]">取消</button>
+            <button @click="closeUploadModal" class="flex-1 py-2 rounded-xl bg-white/50 text-gray-600 text-sm font-medium hover:bg-white/80 transition-all border border-[#d1d7dc]">取消</button>
             <button @click="doUpload" :disabled="!uploadForm.files.length || uploading" class="flex-1 py-2 rounded-xl bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
               {{ uploadProgress || '确认上传' }}
             </button>
@@ -353,9 +348,9 @@ const selectResource = (resource: Resource) => {
   if (isMobile.value) panelOpen.value = false
 }
 
-const getFileIcon = (fileType: string) => {
+const getFileColor = (fileType: string) => {
   const ext = (fileType || '').replace('.', '').toLowerCase()
-  return ({ pdf: '📕', doc: '📘', docx: '📘', ppt: '📙', pptx: '📙', xls: '📗', xlsx: '📗' } as Record<string, string>)[ext] || '📄'
+  return ({ pdf: 'text-red-400', doc: 'text-blue-400', docx: 'text-blue-400', ppt: 'text-orange-400', pptx: 'text-orange-400', xls: 'text-green-500', xlsx: 'text-green-500' } as Record<string, string>)[ext] || 'text-gray-400'
 }
 
 const formatFileSize = (bytes: number) => {

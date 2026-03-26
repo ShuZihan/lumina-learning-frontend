@@ -9,17 +9,7 @@
 }
 
 body {
-    /* 真实素描纸/打印纸质感 */
-    background-color: #f3ede0; /* 暖米黄色道林纸底色 */
-    background-image:
-        /* 第一层：细纤维纹理 */
-        url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='0.95 1'/%3E%3CfeFuncG type='table' tableValues='0.95 1'/%3E%3CfeFuncB type='table' tableValues='0.95 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.15'/%3E%3C/svg%3E"),
-        /* 第二层：细微凹凸纹理 */
-        url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='rough'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02' numOctaves='5' stitchTiles='stitch'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23f3ede0' filter='url(%23rough)' opacity='0.2'/%3E%3C/svg%3E");
-    background-size: 100px 100px, 400px 400px;
-    background-repeat: repeat;
-    /* 柔和暗角 */
-    box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.04);
+    background-color: #f7f9fa;
     min-height: 100vh;
 }
 
@@ -45,13 +35,13 @@ body {
 /* PC端：只有hover容器时显示滚动条，性能更高 */
 main:hover::-webkit-scrollbar-thumb,
 aside:hover .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: #e9e3d8 !important; /* 非常淡的颜色，和纸张融合 */
+    background: #d1d7dc !important; /* 非常淡的颜色，和纸张融合 */
     background-clip: content-box !important;
 }
 
 /* hover滚动条本身时颜色稍深 - 整个16px宽度都能触发 */
 ::-webkit-scrollbar-thumb:hover {
-    background: #dcd2c3 !important; /* 稍深一点，反馈清晰 */
+    background: #b4bec6 !important; /* 稍深一点，反馈清晰 */
     background-clip: content-box !important;
 }
 
@@ -62,7 +52,7 @@ main {
 }
 
 main:hover {
-    scrollbar-color: #e9e3d8 transparent;
+    scrollbar-color: #d1d7dc transparent;
 }
 
 aside .overflow-y-auto {
@@ -71,72 +61,58 @@ aside .overflow-y-auto {
 }
 
 aside:hover .overflow-y-auto {
-    scrollbar-color: #e9e3d8 transparent;
+    scrollbar-color: #d1d7dc transparent;
 }
 
 /* Firefox兼容 */
 main {
-    scrollbar-color: #b9a992 transparent;
+    scrollbar-color: #b4bec6 transparent;
     scrollbar-width: auto;
     padding-right: 4px; /* 减小右边距 */
 }
 
 aside .overflow-y-auto {
-    scrollbar-color: #b9a992 transparent;
+    scrollbar-color: #b4bec6 transparent;
     scrollbar-width: auto;
 }
 
-/* 基础纸张面板 - 用于表单、弹窗 */
+/* 基础面板 */
 .glass {
-    background: rgba(255, 254, 251, 0.92);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(210, 202, 190, 0.8);
-    box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.07),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9); /* 顶部高光，模拟纸张厚度 */
+    background: #ffffff;
+    border: 1px solid #d1d7dc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 8px 16px rgba(0, 0, 0, 0.04);
 }
 
-/* 导航栏 - 同材质叠纸效果，和背景纸张材质颜色完全一致 */
+/* 导航栏 */
 .glass-nav {
-    background-color: #f3ede0; /* 和背景完全相同的纸张底色 */
-    background-image: inherit; /* 继承背景的纸张纹理 */
-    background-size: inherit;
-    border-bottom: 1px solid #d9d0bf;
-    /* 保持叠纸阴影效果，只是材质颜色和背景统一 */
-    box-shadow:
-        0 5px 15px rgba(0, 0, 0, 0.07),
-        0 2px 5px rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+    border-bottom: 1px solid #d1d7dc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-/* 卡片 - 纸质卡片效果 */
+/* 卡片 */
 .glass-card {
-    background: rgba(255, 254, 251, 0.93);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border: 1px solid rgba(210, 202, 190, 0.8);
-    box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.06),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9); /* 顶部高光 */
-    transition: all 0.3s ease;
+    background: #ffffff;
+    border: 1px solid #d1d7dc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .glass-card:hover {
-    background: rgba(255, 254, 251, 0.98);
-    transform: translateY(-5px);
-    box-shadow:
-        0 12px 32px rgba(0, 0, 0, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06), 0 12px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* 按钮样式 */
 .btn-primary {
-    background: linear-gradient(to right, #3b82f6, #2563eb);
-    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #4f8ef7 0%, #2563eb 100%);
+    transition: all 0.18s ease;
+    letter-spacing: 0.01em;
 }
 
 .btn-primary:hover {
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.28);
+    transform: translateY(-1px);
 }
 
 /* 动画效果 */
@@ -159,8 +135,9 @@ aside .overflow-y-auto {
 .markdown-content h3 {
     font-weight: 600;
     margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    color: #2c261e; /* 暖黑色，更像印刷文字 */
+    margin-bottom: 0.75rem;
+    color: #2c261e;
+    letter-spacing: -0.02em;
 }
 
 .markdown-content h1 { font-size: 1.8rem; }
