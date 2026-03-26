@@ -78,30 +78,17 @@
             </p>
           </div>
 
-          <!-- 功能选择区域 -->
-          <FunctionSelector
-            v-if="selectedResource && !chatActive && !loading"
-            :selected-resource="selectedResource"
-            @analysis-start="onAnalysisStart"
-          />
-
-          <!-- 初次分析加载中 -->
-          <div v-if="loading" class="glass rounded-2xl p-12 text-center">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100/80 flex items-center justify-center">
-              <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">AI 分析中</h3>
-            <p class="text-gray-500">正在处理资源内容，很快就好...</p>
-          </div>
-
           <!-- 对话面板 -->
           <ChatPanel
-            v-if="chatActive && selectedResource && !loading"
+            v-if="chatActive && selectedResource"
             class="flex-1 min-h-0"
             :selected-resource="selectedResource"
-            :analysis-type="selectedAnalysisType!"
+            :resource-name="selectedResourceName"
+            :analysis-type="selectedAnalysisType ?? ''"
             :initial-message="initialMessage"
+            :loading="loading"
             @reset="onReset"
+            @analysis-start="onAnalysisStart"
           />
         </div>
       </main>
@@ -113,7 +100,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ResourceSelector from '../components/ResourceSelector.vue'
-import FunctionSelector from '../components/FunctionSelector.vue'
 import ChatPanel from '../components/ChatPanel.vue'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
 import { useAuthStore } from '../stores/auth'
@@ -123,21 +109,18 @@ const auth = useAuthStore()
 
 const sidebarRef = ref<{ toggle: () => void } | null>(null)
 const selectedResource = ref<string | null>(null)
+const selectedResourceName = ref('')
 const selectedAnalysisType = ref<string | null>(null)
 const chatActive = ref(false)
 const initialMessage = ref('')
 const loading = ref(false)
 
-const onResourceSelected = (filename: string) => {
-  if (!filename) {
-    selectedResource.value = null
-    chatActive.value = false
-    initialMessage.value = ''
-    return
-  }
-  selectedResource.value = filename
-  chatActive.value = false
+const onResourceSelected = (filename: string, originalFilename: string) => {
+  selectedResource.value = filename || null
+  selectedResourceName.value = originalFilename
+  chatActive.value = !!filename
   initialMessage.value = ''
+  selectedAnalysisType.value = null
 }
 
 const onAnalysisStart = async (filename: string, analysisType: string) => {

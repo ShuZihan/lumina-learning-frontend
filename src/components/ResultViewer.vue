@@ -39,6 +39,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
+import markedKatex from 'marked-katex-extension'
+import 'katex/dist/katex.min.css'
+
+marked.use(markedKatex({ throwOnError: false }))
+
+function normalizeLatex(content: string): string {
+  return content
+    .replace(/\\\[/g, '$$').replace(/\\\]/g, '$$')
+    .replace(/\\\(/g, '$').replace(/\\\)/g, '$')
+}
 
 const props = defineProps<{
   result: any
@@ -70,7 +81,10 @@ const renderedMarkdown = computed(() => {
       content += '\n'
     }
   }
-  return marked.parse(content)
+  return DOMPurify.sanitize(marked.parse(normalizeLatex(content)) as string, {
+    ADD_TAGS: ['math', 'semantics', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac', 'msubsup', 'mover', 'munder', 'mspace', 'mtable', 'mtr', 'mtd', 'annotation'],
+    ADD_ATTR: ['xmlns', 'display'],
+  })
 })
 
 const downloadResult = () => {
