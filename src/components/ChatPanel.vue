@@ -84,7 +84,7 @@
             </svg>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="markdown-content chat-markdown" v-html="renderMd(msg.content)"></div>
+            <MarkdownRenderer :content="msg.content" />
             <button
               @click="copyMarkdown(msg.content, msg.id)"
               class="mt-2 flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
@@ -102,7 +102,7 @@
       </div>
 
       <!-- 正在输入指示器 -->
-      <div v-if="responding || loading" class="flex items-start gap-2.5">
+      <div v-if="(responding || loading) && !streamingId" class="flex items-start gap-2.5">
         <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center shrink-0">
           <svg style="width:12px;height:12px" class="text-white" viewBox="0 0 24 24" fill="currentColor">
             <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/>
@@ -147,9 +147,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
-import { renderMarkdown } from '../utils/markdown'
+import { ref, computed, watch, onMounted, nextTick, defineAsyncComponent } from 'vue'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
+
+const MarkdownRenderer = defineAsyncComponent(() => import('./MarkdownRenderer.vue'))
 
 interface Message {
   id: string
@@ -174,6 +175,7 @@ const messagesEl = ref<HTMLElement | null>(null)
 const inputEl = ref<HTMLTextAreaElement | null>(null)
 const inputText = ref('')
 const responding = ref(false)
+const streamingId = ref<string | null>(null)
 const copiedId = ref<string | null>(null)
 
 const copyMarkdown = async (content: string, id: string) => {
@@ -187,10 +189,14 @@ const messages = ref<Message[]>(
 )
 
 watch(() => props.initialMessage, (val) => {
-  if (val && !messages.value.find(m => m.id === '0')) {
-    messages.value.unshift({ id: '0', role: 'assistant', content: val })
-    scrollToBottom()
+  if (!val) return
+  const existing = messages.value.find(m => m.id === '0')
+  if (existing) {
+    existing.content = val
+  } else {
+    messages.value.push({ id: '0', role: 'assistant', content: val })
   }
+  scrollToBottom()
 })
 
 const analysisTypeText = computed(() => {
@@ -201,10 +207,6 @@ const analysisTypeText = computed(() => {
   }
   return map[props.analysisType] || '分析结果'
 })
-
-const renderMd = (content: string): string => {
-  return renderMarkdown(content || '')
-}
 
 const scrollToBottom = async () => {
   await nextTick()
@@ -236,6 +238,7 @@ const sendMessage = async () => {
   await scrollToBottom()
 
   responding.value = true
+  const aiMsgId = (Date.now() + 1).toString()
   try {
     const resp = await fetch(getApiUrl('/api/chat'), {
       method: 'POST',
@@ -245,15 +248,44 @@ const sendMessage = async () => {
         messages: messages.value.map(m => ({ role: m.role, content: m.content })),
       }),
     })
-    const data = await resp.json()
-    if (data.success) {
-      messages.value.push({ id: (Date.now() + 1).toString(), role: 'assistant', content: data.content })
+
+    const contentType = resp.headers.get('content-type') || ''
+    if (contentType.includes('text/event-stream') && resp.body) {
+      streamingId.value = aiMsgId
+      messages.value.push({ id: aiMsgId, role: 'assistant', content: '' })
+      await scrollToBottom()
+
+      const reader = resp.body.getReader()
+      const decoder = new TextDecoder()
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value, { stream: true })
+        const aiMsg = messages.value.find(m => m.id === aiMsgId)
+        const doneIdx = chunk.indexOf('[DONE]')
+        if (doneIdx !== -1) {
+          if (aiMsg && doneIdx > 0) aiMsg.content += chunk.substring(0, doneIdx)
+          break
+        }
+        if (chunk.includes('[ERROR]')) {
+          if (aiMsg) aiMsg.content = '抱歉，出现了错误：' + chunk.replace(/.*\[ERROR\]\s*/, '')
+          break
+        }
+        if (aiMsg) aiMsg.content += chunk
+        await scrollToBottom()
+      }
     } else {
-      messages.value.push({ id: (Date.now() + 1).toString(), role: 'assistant', content: `抱歉，出现了错误：${data.detail || '请稍后重试'}` })
+      const data = await resp.json()
+      if (data.success) {
+        messages.value.push({ id: aiMsgId, role: 'assistant', content: data.content })
+      } else {
+        messages.value.push({ id: aiMsgId, role: 'assistant', content: `抱歉，出现了错误：${data.detail || '请稍后重试'}` })
+      }
     }
   } catch {
-    messages.value.push({ id: (Date.now() + 1).toString(), role: 'assistant', content: '网络请求失败，请检查连接后重试。' })
+    messages.value.push({ id: aiMsgId, role: 'assistant', content: '网络请求失败，请检查连接后重试。' })
   } finally {
+    streamingId.value = null
     responding.value = false
     await scrollToBottom()
   }

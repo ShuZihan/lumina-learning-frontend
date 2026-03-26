@@ -126,14 +126,12 @@ const onResourceSelected = (filename: string, originalFilename: string) => {
 const onAnalysisStart = async (filename: string, analysisType: string) => {
   loading.value = true
   selectedAnalysisType.value = analysisType
+  initialMessage.value = ''
 
   try {
     const response = await fetch(getApiUrl('/api/analyze'), {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...getAuthHeaders(),
-      },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify({ filename, analysis_type: analysisType }),
     })
 
@@ -143,12 +141,40 @@ const onAnalysisStart = async (filename: string, analysisType: string) => {
       return
     }
 
-    const data = await response.json()
-    if (data.success) {
-      initialMessage.value = data.result.content
-      chatActive.value = true
-    } else {
+    if (!response.ok) {
+      const data = await response.json()
       alert('分析失败: ' + (data.detail || '未知错误'))
+      return
+    }
+
+    const contentType = response.headers.get('content-type') || ''
+    if (contentType.includes('text/event-stream') && response.body) {
+      loading.value = false
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value, { stream: true })
+        const doneIdx = chunk.indexOf('[DONE]')
+        if (doneIdx !== -1) {
+          if (doneIdx > 0) initialMessage.value += chunk.substring(0, doneIdx)
+          break
+        }
+        if (chunk.includes('[ERROR]')) {
+          alert('分析失败: ' + chunk.replace(/.*\[ERROR\]\s*/, ''))
+          break
+        }
+        initialMessage.value += chunk
+      }
+    } else {
+      const data = await response.json()
+      if (data.success) {
+        initialMessage.value = data.result.content
+        chatActive.value = true
+      } else {
+        alert('分析失败: ' + (data.detail || '未知错误'))
+      }
     }
   } catch (error) {
     alert('请求失败，请检查后端服务是否运行')
