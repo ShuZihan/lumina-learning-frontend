@@ -6,7 +6,7 @@
       </div>
       <div>
         <h3 class="text-2xl font-bold text-gray-800">选择分析功能</h3>
-        <p class="text-gray-500 text-sm">已选择课件: <span class="font-medium text-amber-600">{{ selectedCourse }}</span></p>
+        <p class="text-gray-500 text-sm">已选择资源: <span class="font-medium text-amber-600">{{ selectedResource }}</span></p>
       </div>
     </div>
 
@@ -18,7 +18,7 @@
         </div>
         <h4 class="text-xl font-bold text-gray-800 mb-2">生成学习计划</h4>
         <p class="text-gray-500 text-sm mb-4">
-          根据课件内容生成详细的阶段性学习计划，包含学习进度安排、重点内容和方法建议。
+          根据资源内容生成详细的阶段性学习计划，包含学习进度安排、重点内容和方法建议。
         </p>
         <div class="flex items-center text-blue-500 font-medium text-sm">
           <span>开始生成</span>
@@ -33,7 +33,7 @@
         </div>
         <h4 class="text-xl font-bold text-gray-800 mb-2">提取重点知识</h4>
         <p class="text-gray-500 text-sm mb-4">
-          自动提炼课件中的核心知识点、重要概念和关键结论，便于快速复习和记忆。
+          自动提炼资源中的核心知识点、重要概念和关键结论，便于快速复习和记忆。
         </p>
         <div class="flex items-center text-emerald-500 font-medium text-sm">
           <span>开始提取</span>
@@ -48,7 +48,7 @@
         </div>
         <h4 class="text-xl font-bold text-gray-800 mb-2">生成模拟考题</h4>
         <p class="text-gray-500 text-sm mb-4">
-          根据课件内容生成包含选择题、判断题、简答题的模拟试卷，并提供参考答案。
+          根据资源内容生成包含选择题、判断题、简答题的模拟试卷，并提供参考答案。
         </p>
         <div class="flex items-center text-purple-500 font-medium text-sm">
           <span>开始生成</span>
@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  selectedCourse: string
+  selectedResource: string
 }>()
 
 const emit = defineEmits<{
@@ -69,6 +69,6 @@ const emit = defineEmits<{
 }>()
 
 const startAnalysis = (analysisType: string) => {
-  emit('analysis-start', props.selectedCourse, analysisType)
+  emit('analysis-start', props.selectedResource, analysisType)
 }
 </script>
