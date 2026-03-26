@@ -85,6 +85,18 @@
           </div>
           <div class="min-w-0 flex-1">
             <div class="markdown-content chat-markdown" v-html="renderMd(msg.content)"></div>
+            <button
+              @click="copyMarkdown(msg.content, msg.id)"
+              class="mt-2 flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg v-if="copiedId !== msg.id" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+              </svg>
+              <svg v-else style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span :class="copiedId === msg.id ? 'text-emerald-500' : ''">{{ copiedId === msg.id ? '已复制' : '复制原文' }}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -162,6 +174,13 @@ const messagesEl = ref<HTMLElement | null>(null)
 const inputEl = ref<HTMLTextAreaElement | null>(null)
 const inputText = ref('')
 const responding = ref(false)
+const copiedId = ref<string | null>(null)
+
+const copyMarkdown = async (content: string, id: string) => {
+  await navigator.clipboard.writeText(content)
+  copiedId.value = id
+  setTimeout(() => { copiedId.value = null }, 2000)
+}
 
 const messages = ref<Message[]>(
   props.initialMessage ? [{ id: '0', role: 'assistant', content: props.initialMessage }] : []
