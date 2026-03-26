@@ -1,5 +1,14 @@
 <template>
-  <div class="mb-8">
+  <!-- 紧凑模式：一排小按钮 -->
+  <div v-if="compact" class="shrink-0 flex items-center gap-2 py-2 px-1 flex-wrap">
+    <span class="text-xs text-gray-400 mr-1">分析：</span>
+    <button @click="startAnalysis('learning_plan')" class="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200/70 text-blue-600 text-xs font-medium hover:bg-blue-100 transition-colors">学习计划</button>
+    <button @click="startAnalysis('key_points')" class="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/70 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition-colors">提取重点</button>
+    <button @click="startAnalysis('mock_questions')" class="px-3 py-1.5 rounded-lg bg-violet-50 border border-violet-200/70 text-violet-600 text-xs font-medium hover:bg-violet-100 transition-colors">模拟考题</button>
+  </div>
+
+  <!-- 普通模式：大卡片 -->
+  <div v-else class="mb-8">
     <div class="flex items-center gap-3 mb-6">
       <div>
         <h3 class="text-xl font-semibold text-gray-800 tracking-tight">选择分析功能</h3>
@@ -80,6 +89,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   selectedResource: string
+  compact?: boolean
 }>()
 
 const emit = defineEmits<{

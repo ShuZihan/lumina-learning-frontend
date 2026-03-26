@@ -99,7 +99,7 @@
                 v-for="resource in publicFiles"
                 :key="resource.id"
                 class="flex items-center gap-1.5 px-2 py-1 rounded-lg cursor-pointer transition-all"
-                :class="selectedResource === resource.filename ? 'bg-blue-500/20' : 'hover:bg-white/40'"
+                :class="selectedResource === resource.storage_key ? 'bg-blue-500/20' : 'hover:bg-white/40'"
                 @click="selectResource(resource)"
               >
                 <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -126,7 +126,7 @@
                 v-for="resource in myFiles"
                 :key="resource.id"
                 class="flex items-center gap-1.5 px-2 py-1 rounded-lg cursor-pointer transition-all"
-                :class="selectedResource === resource.filename ? 'bg-blue-500/20' : 'hover:bg-white/40'"
+                :class="selectedResource === resource.storage_key ? 'bg-blue-500/20' : 'hover:bg-white/40'"
                 @click="selectResource(resource)"
               >
                 <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -210,7 +210,7 @@ import { getApiUrl, getAuthHeaders } from '../utils/api'
 import { useAuthStore } from '../stores/auth'
 
 const emit = defineEmits<{
-  'resource-selected': [filename: string]
+  'resource-selected': [storageKey: string, originalFilename: string]
 }>()
 
 const auth = useAuthStore()
@@ -226,6 +226,7 @@ interface Resource {
   id: string
   filename: string
   original_filename: string
+  storage_key: string
   user_id: string | null
   is_public: boolean
   tags: string[]
@@ -305,9 +306,9 @@ const deleteResource = async (resource: Resource) => {
       method: 'DELETE', headers: getAuthHeaders(),
     })
     if (resp.ok) {
-      if (selectedResource.value === resource.filename) {
+      if (selectedResource.value === resource.storage_key) {
         selectedResource.value = null
-        emit('resource-selected', '')
+        emit('resource-selected', '', '')
       }
       await loadResources()
     } else {
@@ -354,8 +355,8 @@ const loadResources = async () => {
 }
 
 const selectResource = (resource: Resource) => {
-  selectedResource.value = resource.filename
-  emit('resource-selected', resource.filename)
+  selectedResource.value = resource.storage_key
+  emit('resource-selected', resource.storage_key, resource.original_filename)
   if (isMobile.value) panelOpen.value = false
 }
 
