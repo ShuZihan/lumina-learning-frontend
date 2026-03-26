@@ -1,8 +1,8 @@
 <template>
   <div class="h-screen flex overflow-hidden">
-    <!-- 侧边栏 - 课件选择 -->
-    <CourseSelector
-      @course-selected="onCourseSelected"
+    <!-- 侧边栏 - 资源选择 -->
+    <ResourceSelector
+      @resource-selected="onResourceSelected"
       :collapsed="sidebarCollapsed"
       @toggle-sidebar="sidebarCollapsed = !sidebarCollapsed"
     />
@@ -26,7 +26,7 @@
             </div>
             <div>
               <h1 class="font-bold text-lg text-gray-800">Lumina Learning</h1>
-              <p class="text-xs text-gray-500">AI 驱动的课件分析工具</p>
+              <p class="text-xs text-gray-500">AI 驱动的资源分析工具</p>
             </div>
           </div>
 
@@ -74,30 +74,30 @@
           <div v-if="auth.isGuest" class="glass rounded-2xl p-8 mb-8 text-center">
             <h2 class="text-3xl font-bold text-gray-800 mb-4">欢迎使用 Lumina Learning</h2>
             <p class="text-gray-600 max-w-2xl mx-auto mb-6">
-              这是一个 AI 驱动的课件分析工具。您当前处于游客模式，只能查看公共课件。
+              这是一个 AI 驱动的资源分析工具。您当前处于游客模式，只能查看公共资源。
             </p>
             <p class="text-gray-500 max-w-2xl mx-auto">
               登录后可解锁完整功能：
             </p>
             <ul class="text-gray-500 max-w-2xl mx-auto mt-2 text-left list-disc pl-6">
-              <li>上传自己的私有课件</li>
+              <li>上传自己的私有资源</li>
               <li>使用 AI 分析功能</li>
               <li>保存和管理个人分析记录</li>
             </ul>
           </div>
 
           <!-- 已登录用户欢迎区域 -->
-          <div v-else-if="!selectedCourse" class="glass rounded-2xl p-8 mb-8 text-center">
+          <div v-else-if="!selectedResource" class="glass rounded-2xl p-8 mb-8 text-center">
             <h2 class="text-3xl font-bold text-gray-800 mb-4">欢迎回来，{{ auth.user?.nickname || '用户' }}!</h2>
             <p class="text-gray-600 max-w-2xl mx-auto">
-              从左侧选择课件，AI将自动为您生成学习计划、提取重点知识或生成模拟考题，提升学习效率。
+              从左侧选择资源，AI将自动为您生成学习计划、提取重点知识或生成模拟考题，提升学习效率。
             </p>
           </div>
 
           <!-- 功能选择区域 - 仅登录用户可见 -->
           <FunctionSelector
-            v-if="!auth.isGuest && selectedCourse"
-            :selected-course="selectedCourse"
+            v-if="!auth.isGuest && selectedResource"
+            :selected-resource="selectedResource"
             @analysis-start="onAnalysisStart"
           />
 
@@ -116,7 +116,7 @@
                 <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
               <h3 class="text-xl font-bold text-gray-800 mb-2">AI 分析中</h3>
-              <p class="text-gray-500">正在处理课件内容，很快就好...</p>
+              <p class="text-gray-500">正在处理资源内容，很快就好...</p>
             </div>
           </div>
         </div>
@@ -135,7 +135,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import CourseSelector from '../components/CourseSelector.vue'
+import ResourceSelector from '../components/ResourceSelector.vue'
 import FunctionSelector from '../components/FunctionSelector.vue'
 import ResultViewer from '../components/ResultViewer.vue'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
@@ -144,7 +144,7 @@ import { useAuthStore } from '../stores/auth'
 const router = useRouter()
 const auth = useAuthStore()
 
-const selectedCourse = ref<string | null>(null)
+const selectedResource = ref<string | null>(null)
 const selectedAnalysisType = ref<string | null>(null)
 const analysisResult = ref<any>(null)
 const loading = ref(false)
@@ -161,13 +161,14 @@ const handleResize = () => {
 onMounted(() => window.addEventListener('resize', handleResize))
 onUnmounted(() => window.removeEventListener('resize', handleResize))
 
-const onCourseSelected = (filename: string) => {
-  if (auth.isGuest) {
-    alert('请先登录以使用分析功能')
-    router.push('/login')
+const onResourceSelected = (filename: string) => {
+  if (!filename) {
+    // 资源被删除时清空选择
+    selectedResource.value = null
+    analysisResult.value = null
     return
   }
-  selectedCourse.value = filename
+  selectedResource.value = filename
   analysisResult.value = null
 }
 
@@ -207,7 +208,7 @@ const onAnalysisStart = async (filename: string, analysisType: string) => {
 }
 
 const onReset = () => {
-  selectedCourse.value = null
+  selectedResource.value = null
   analysisResult.value = null
   selectedAnalysisType.value = null
 }
