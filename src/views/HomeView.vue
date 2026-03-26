@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen flex flex-col overflow-hidden">
     <!-- 导航栏 - 全宽 -->
-    <nav class="glass-nav shrink-0 z-50">
+    <nav class="glass-nav shrink-0 z-[70]">
       <div class="px-4 h-14 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <!-- 手机端侧边栏开关 -->
@@ -11,12 +11,12 @@
           >
             <span class="text-base leading-none">☰</span>
           </button>
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center shadow-lg">
-            <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center shadow-lg">
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
               <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/>
             </svg>
           </div>
-          <h1 class="font-bold text-lg text-gray-800">Lumina Learning</h1>
+          <h1 class="font-bold text-base md:text-lg text-gray-800">Lumina Learning</h1>
         </div>
 
         <!-- 右侧：用户信息 + 退出 -->
@@ -61,7 +61,7 @@
         <div class="container mx-auto max-w-5xl">
           <!-- 游客提示 -->
           <div v-if="auth.isGuest" class="glass rounded-2xl p-8 mb-8 text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">欢迎使用 Lumina Learning</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">欢迎使用 Lumina Learning</h2>
             <p class="text-gray-600 max-w-2xl mx-auto mb-6">
               这是一个 AI 驱动的资源分析工具。您当前处于游客模式，只能查看公共资源。
             </p>
@@ -75,7 +75,7 @@
 
           <!-- 已登录用户欢迎区域 -->
           <div v-else-if="!selectedResource" class="glass rounded-2xl p-8 mb-8 text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">欢迎回来，{{ auth.user?.nickname || '用户' }}!</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">欢迎回来，{{ auth.user?.nickname || '用户' }}!</h2>
             <p class="text-gray-600 max-w-2xl mx-auto">
               从左侧选择资源，AI将自动为您生成学习计划、提取重点知识或生成模拟考题，提升学习效率。
             </p>
