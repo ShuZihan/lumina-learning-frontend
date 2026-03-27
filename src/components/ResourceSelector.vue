@@ -21,7 +21,7 @@
         @click="panelOpen = !panelOpen"
         class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
         :class="panelOpen ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'"
-        :title="panelOpen ? '收起侧边栏' : '展开侧边栏'"
+        :title="panelOpen ? t('resource.collapsePanel') : t('resource.expandPanel')"
       >
         <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -46,7 +46,7 @@
         <div class="flex items-center gap-0.5 mb-1 px-1">
           <button
             @click="auth.isGuest ? router.push('/login') : showUploadModal = true"
-            :title="auth.isGuest ? '登录后可上传资源' : '上传资源'"
+            :title="auth.isGuest ? t('resource.loginToUpload') : t('resource.uploadTooltip')"
             class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-500 hover:bg-gray-100 transition-all"
           >
             <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -55,7 +55,7 @@
           </button>
           <button
             @click="loadResources"
-            title="刷新文件列表"
+            :title="t('resource.refresh')"
             :class="loading ? 'animate-spin text-blue-400' : 'text-gray-400 hover:text-blue-500 hover:bg-gray-100'"
             class="w-6 h-6 flex items-center justify-center rounded transition-all"
           >
@@ -67,7 +67,7 @@
           <button
             v-if="!auth.isGuest"
             @click="selectedResourceObj && canDelete(selectedResourceObj) && deleteResource(selectedResourceObj)"
-            title="删除选中文件"
+            :title="t('resource.delete')"
             :disabled="!selectedResourceObj || !canDelete(selectedResourceObj)"
             class="w-6 h-6 flex items-center justify-center rounded transition-all"
             :class="selectedResourceObj && canDelete(selectedResourceObj)
@@ -94,7 +94,7 @@
               <span class="ml-auto text-gray-400 font-normal">{{ publicFiles.length }}</span>
             </button>
             <div v-if="publicOpen" class="ml-3 mt-0.5 space-y-px">
-              <p v-if="publicFiles.length === 0" class="text-xs text-gray-400 px-2 py-1">暂无文件</p>
+              <p v-if="publicFiles.length === 0" class="text-xs text-gray-400 px-2 py-1">{{ t('resource.noFiles') }}</p>
               <div
                 v-for="resource in publicFiles"
                 :key="resource.id"
@@ -117,11 +117,11 @@
             >
               <svg style="width:10px;height:10px" class="transition-transform duration-150 flex-shrink-0" :class="mineOpen ? 'rotate-90' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               <svg style="width:13px;height:13px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-              <span class="text-gray-600">我的文件</span>
+              <span class="text-gray-600">{{ t('resource.myFiles') }}</span>
               <span class="ml-auto text-gray-400 font-normal">{{ myFiles.length }}</span>
             </button>
             <div v-if="mineOpen" class="ml-3 mt-0.5 space-y-px">
-              <p v-if="myFiles.length === 0" class="text-xs text-gray-400 px-2 py-1">暂无文件</p>
+              <p v-if="myFiles.length === 0" class="text-xs text-gray-400 px-2 py-1">{{ t('resource.noFiles') }}</p>
               <div
                 v-for="resource in myFiles"
                 :key="resource.id"
@@ -151,10 +151,10 @@
       <div v-if="showUploadModal" class="fixed inset-0 z-[200] flex items-center justify-center">
         <div class="absolute inset-0 bg-black/40" @click="closeUploadModal"></div>
         <div class="relative glass rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl">
-          <h3 class="font-bold text-gray-800 text-lg mb-4">上传资源</h3>
+          <h3 class="font-bold text-gray-800 text-lg mb-4">{{ t('resource.uploadTitle') }}</h3>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm text-gray-600 mb-1">选择文件</label>
+              <label class="block text-sm text-gray-600 mb-1">{{ t('resource.selectFile') }}</label>
               <input
                 ref="fileInputRef"
                 type="file"
@@ -163,7 +163,7 @@
                 @change="onFileSelect"
                 class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-500/10 file:text-blue-600 hover:file:bg-blue-500/20 cursor-pointer"
               />
-              <p class="text-xs text-gray-400 mt-1">支持 PDF、Word、PPT、Excel（最大 {{ maxFileSizeMB }}MB，可多选）</p>
+              <p class="text-xs text-gray-400 mt-1">{{ t('resource.fileHint', { size: maxFileSizeMB }) }}</p>
               <ul v-if="uploadForm.files.length > 0" class="mt-1.5 flex flex-wrap gap-1">
                 <li
                   v-for="(f, i) in uploadForm.files"
@@ -177,24 +177,24 @@
               </ul>
             </div>
             <div>
-              <label class="block text-sm text-gray-600 mb-1">标签（可选，逗号分隔）</label>
+              <label class="block text-sm text-gray-600 mb-1">{{ t('resource.tags') }}</label>
               <input
                 v-model="uploadForm.tags"
                 type="text"
-                placeholder="例如：数学, 高中, 代数"
+                :placeholder="t('resource.tagsPlaceholder')"
                 class="w-full px-3 py-2 rounded-lg bg-white/60 border border-[#d1d7dc] text-sm text-gray-700 focus:outline-none focus:border-blue-400"
               />
             </div>
             <div v-if="auth.isAdmin" class="flex items-center gap-3 p-3 rounded-lg bg-amber-50/80 border border-amber-200/50">
               <input type="checkbox" id="isPublicCheck" v-model="uploadForm.isPublic" class="w-4 h-4 rounded accent-blue-500" />
-              <label for="isPublicCheck" class="text-sm text-gray-700 cursor-pointer">设为公共资源（所有用户可见）</label>
+              <label for="isPublicCheck" class="text-sm text-gray-700 cursor-pointer">{{ t('resource.makePublic') }}</label>
             </div>
-            <p v-else class="text-xs text-gray-400 bg-white/40 rounded-lg px-3 py-2">上传的资源为私有，仅您本人可见。</p>
+            <p v-else class="text-xs text-gray-400 bg-white/40 rounded-lg px-3 py-2">{{ t('resource.privateNote') }}</p>
           </div>
           <div class="flex gap-3 mt-6">
-            <button @click="closeUploadModal" class="flex-1 py-2 rounded-xl bg-white/50 text-gray-600 text-sm font-medium hover:bg-white/80 transition-all border border-[#d1d7dc]">取消</button>
+            <button @click="closeUploadModal" class="flex-1 py-2 rounded-xl bg-white/50 text-gray-600 text-sm font-medium hover:bg-white/80 transition-all border border-[#d1d7dc]">{{ t('resource.cancel') }}</button>
             <button @click="doUpload" :disabled="!uploadForm.files.length || uploading" class="flex-1 py-2 rounded-xl bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-              {{ uploadProgress || '确认上传' }}
+              {{ uploadProgress || t('resource.confirmUpload') }}
             </button>
           </div>
         </div>
@@ -205,9 +205,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
 import { useAuthStore } from '../stores/auth'
+
+const { t } = useI18n()
 
 const emit = defineEmits<{
   'resource-selected': [storageKey: string, originalFilename: string]
@@ -275,7 +278,9 @@ const doUpload = async () => {
   const total = uploadForm.value.files.length
   for (let i = 0; i < total; i++) {
     const file = uploadForm.value.files[i]
-    uploadProgress.value = total > 1 ? `上传中 (${i + 1}/${total})...` : '上传中...'
+    uploadProgress.value = total > 1
+      ? t('resource.uploadingProgress', { current: i + 1, total })
+      : t('resource.uploading')
     try {
       const formData = new FormData()
       formData.append('file', file)
@@ -285,14 +290,14 @@ const doUpload = async () => {
         method: 'POST', headers: getAuthHeaders(), body: formData,
       })
       const data = await resp.json()
-      if (!resp.ok || !data.success) errors.push(`${file.name}：${data.detail || '未知错误'}`)
+      if (!resp.ok || !data.success) errors.push(`${file.name}：${data.detail || t('resource.unknownError')}`)
     } catch {
-      errors.push(`${file.name}：网络错误`)
+      errors.push(`${file.name}：${t('resource.networkError')}`)
     }
   }
   uploading.value = false
   uploadProgress.value = ''
-  if (errors.length) alert('以下文件上传失败：\n' + errors.join('\n'))
+  if (errors.length) alert(t('resource.uploadFailed') + '\n' + errors.join('\n'))
   closeUploadModal()
   await loadResources()
 }
@@ -300,7 +305,7 @@ const doUpload = async () => {
 const canDelete = (resource: Resource) => !auth.isGuest && (auth.isAdmin || resource.user_id === auth.user?.id)
 
 const deleteResource = async (resource: Resource) => {
-  if (!confirm(`确定删除「${resource.original_filename}」吗？此操作不可恢复。`)) return
+  if (!confirm(t('resource.deleteConfirm', { name: resource.original_filename }))) return
   try {
     const resp = await fetch(getApiUrl(`/api/resources/${resource.id}`), {
       method: 'DELETE', headers: getAuthHeaders(),
@@ -313,9 +318,9 @@ const deleteResource = async (resource: Resource) => {
       await loadResources()
     } else {
       const data = await resp.json()
-      alert('删除失败：' + (data.detail || '未知错误'))
+      alert(t('resource.deleteFailed') + (data.detail || t('resource.unknownError')))
     }
-  } catch { alert('删除请求失败，请检查网络连接') }
+  } catch { alert(t('resource.deleteNetworkError')) }
 }
 
 // 拖动调整面板宽度
@@ -350,7 +355,7 @@ const loadResources = async () => {
   try {
     const resp = await fetch(getApiUrl('/api/resources'), { headers: getAuthHeaders() })
     resources.value = (await resp.json()).resources || []
-  } catch { console.error('加载资源列表失败') }
+  } catch { console.error('Failed to load resources') }
   finally { loading.value = false }
 }
 

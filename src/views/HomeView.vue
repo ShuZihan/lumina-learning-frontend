@@ -19,11 +19,11 @@
           <h1 class="font-bold text-base md:text-lg text-gray-800">Lumina Learning</h1>
         </div>
 
-        <!-- 右侧：用户信息 + 退出 -->
+        <!-- 右侧：用户信息 + 退出 + 语言切换 -->
         <div class="flex items-center gap-3">
           <!-- 游客状态 -->
           <div v-if="auth.isGuest" class="flex items-center gap-2">
-            <span class="text-sm text-gray-700 font-medium">游客</span>
+            <span class="text-sm text-gray-700 font-medium">{{ t('nav.guest') }}</span>
           </div>
           <!-- 登录用户状态 -->
           <div v-else class="flex items-center gap-2">
@@ -31,20 +31,28 @@
               v-if="auth.user?.avatar"
               :src="auth.user.avatar"
               class="w-8 h-8 rounded-full border-2 border-white/60 shadow-sm"
-              :alt="auth.user.nickname || '用户'"
+              :alt="auth.user.nickname || t('nav.user')"
               referrerpolicy="no-referrer"
             />
             <span v-else class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-sm font-medium shadow-sm">
               {{ (auth.user?.nickname || '?')[0] }}
             </span>
-            <span class="text-sm text-gray-700 font-medium hidden sm:block">{{ auth.user?.nickname || '用户' }}</span>
-            <span v-if="auth.isAdmin" class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">管理员</span>
+            <span class="text-sm text-gray-700 font-medium hidden sm:block">{{ auth.user?.nickname || t('nav.user') }}</span>
+            <span v-if="auth.isAdmin" class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">{{ t('nav.admin') }}</span>
           </div>
           <button
             @click="handleLogout"
             class="px-3 py-1.5 rounded-lg bg-white/50 hover:bg-white/80 text-gray-600 text-sm border border-white/50 transition-all"
           >
-            {{ auth.isGuest ? '登录' : '退出' }}
+            {{ auth.isGuest ? t('nav.login') : t('nav.logout') }}
+          </button>
+
+          <!-- 语言切换：固定在最右侧，w-8 保证中英文宽度一致 -->
+          <button
+            @click="toggleLocale"
+            class="w-8 h-8 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-all border border-transparent hover:border-white/50 flex items-center justify-center"
+          >
+            {{ locale === 'zh-CN' ? 'EN' : '中' }}
           </button>
         </div>
       </div>
@@ -68,13 +76,13 @@
           <!-- 欢迎区域（未选择资源时） -->
           <div v-if="!selectedResource && !chatActive" class="glass rounded-2xl p-8 mb-8 text-center">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">
-              {{ auth.isGuest ? '欢迎使用 Lumina Learning' : `欢迎回来，${auth.user?.nickname || '用户'}!` }}
+              {{ auth.isGuest ? t('home.welcomeGuest') : t('home.welcomeBack', { name: auth.user?.nickname || t('nav.user') }) }}
             </h2>
             <p class="text-gray-600 max-w-2xl mx-auto">
-              从左侧选择资源，AI 将自动为您生成学习计划、提取重点知识或生成模拟考题，提升学习效率。
+              {{ t('home.description') }}
             </p>
             <p v-if="auth.isGuest" class="text-gray-400 text-sm mt-3">
-              <router-link to="/login" class="text-blue-500 hover:underline">登录</router-link>后可上传自己的私有资源。
+              <router-link to="/login" class="text-blue-500 hover:underline">{{ t('home.loginLink') }}</router-link>{{ t('home.loginPrompt') }}
             </p>
           </div>
 
@@ -98,12 +106,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import ResourceSelector from '../components/ResourceSelector.vue'
 import ChatPanel from '../components/ChatPanel.vue'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
 import { useAuthStore } from '../stores/auth'
+import { setLocale } from '../i18n'
 
+const { t, locale } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 
@@ -114,6 +125,8 @@ const selectedAnalysisType = ref<string | null>(null)
 const chatActive = ref(false)
 const initialMessage = ref('')
 const loading = ref(false)
+
+const toggleLocale = () => setLocale(locale.value === 'zh-CN' ? 'en-US' : 'zh-CN')
 
 const onResourceSelected = (filename: string, originalFilename: string) => {
   selectedResource.value = filename || null
@@ -143,7 +156,7 @@ const onAnalysisStart = async (filename: string, analysisType: string) => {
 
     if (!response.ok) {
       const data = await response.json()
-      alert('分析失败: ' + (data.detail || '未知错误'))
+      alert(t('error.analysisFailed') + ': ' + (data.detail || t('resource.unknownError')))
       return
     }
 
@@ -162,7 +175,7 @@ const onAnalysisStart = async (filename: string, analysisType: string) => {
           break
         }
         if (chunk.includes('[ERROR]')) {
-          alert('分析失败: ' + chunk.replace(/.*\[ERROR\]\s*/, ''))
+          alert(t('error.analysisFailed') + ': ' + chunk.replace(/.*\[ERROR\]\s*/, ''))
           break
         }
         initialMessage.value += chunk
@@ -173,11 +186,11 @@ const onAnalysisStart = async (filename: string, analysisType: string) => {
         initialMessage.value = data.result.content
         chatActive.value = true
       } else {
-        alert('分析失败: ' + (data.detail || '未知错误'))
+        alert(t('error.analysisFailed') + ': ' + (data.detail || t('resource.unknownError')))
       }
     }
   } catch (error) {
-    alert('请求失败，请检查后端服务是否运行')
+    alert(t('error.requestFailed'))
     console.error(error)
   } finally {
     loading.value = false

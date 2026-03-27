@@ -9,12 +9,14 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
+const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
-const message = ref('正在登录，请稍候...')
+const message = ref(t('auth.loading'))
 
 onMounted(async () => {
   const params = new URLSearchParams(window.location.search)
@@ -24,7 +26,7 @@ onMounted(async () => {
     await auth.fetchUser()
     router.replace('/')
   } else {
-    message.value = '登录失败，请重试'
+    message.value = t('auth.failed')
     setTimeout(() => router.replace('/login'), 2000)
   }
 })
