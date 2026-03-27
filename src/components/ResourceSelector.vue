@@ -104,7 +104,7 @@
               >
                 <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 <span class="text-xs text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
-                <span class="text-[10px] text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
+                <span class="text-xs text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@
               >
                 <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 <span class="text-xs text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
-                <span class="text-[10px] text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
+                <span class="text-xs text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
               </div>
             </div>
           </div>

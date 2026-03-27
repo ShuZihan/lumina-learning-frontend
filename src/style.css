@@ -190,7 +190,7 @@ aside .overflow-y-auto {
 
 .chat-markdown p,
 .chat-markdown li {
-    font-size: 0.875rem; /* 14px */
+    font-size: 0.9375rem; /* 15px */
     color: #374151;
 }
 
