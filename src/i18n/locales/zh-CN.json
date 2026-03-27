@@ -1,0 +1,92 @@
+{
+  "login": {
+    "title": "欢迎使用 Lumina Learning",
+    "subtitle": "登录后可发起 AI 分析，解锁全部功能",
+    "google": "使用 Google 登录",
+    "wechat": "使用微信登录",
+    "divider": "暂不登录",
+    "guest": "游客模式浏览",
+    "terms": "登录即代表同意服务条款与隐私政策"
+  },
+  "nav": {
+    "guest": "游客",
+    "user": "用户",
+    "admin": "管理员",
+    "login": "登录",
+    "logout": "退出"
+  },
+  "home": {
+    "welcomeGuest": "欢迎使用 Lumina Learning",
+    "welcomeBack": "欢迎回来，{name}!",
+    "description": "从左侧选择资源，AI 将自动为您生成学习计划、提取重点知识或生成模拟考题，提升学习效率。",
+    "loginLink": "登录",
+    "loginPrompt": "后可上传自己的私有资源。"
+  },
+  "auth": {
+    "loading": "正在登录，请稍候...",
+    "failed": "登录失败，请重试"
+  },
+  "chat": {
+    "reset": "重新选择",
+    "selectPrompt": "选择一个功能开始分析",
+    "plan": {
+      "title": "生成学习计划",
+      "desc": "根据资源内容生成阶段性学习计划，包含进度安排与方法建议。",
+      "action": "开始生成"
+    },
+    "keyPoints": {
+      "title": "提取重点知识",
+      "desc": "自动提炼核心知识点与关键结论，便于快速复习和记忆。",
+      "action": "开始提取"
+    },
+    "mockQuestions": {
+      "title": "生成模拟考题",
+      "desc": "生成选择题、判断题、简答题模拟试卷，并附参考答案。",
+      "action": "开始生成"
+    },
+    "placeholder": "基于文档继续提问...",
+    "keyHint": "Enter 发送 · Shift+Enter 换行",
+    "copy": "复制原文",
+    "copied": "已复制",
+    "analysisType": {
+      "learning_plan": "学习计划",
+      "key_points": "重点知识提取",
+      "mock_questions": "模拟考题生成",
+      "default": "分析结果"
+    },
+    "errorOccurred": "抱歉，出现了错误：",
+    "retryLater": "请稍后重试",
+    "networkError": "网络请求失败，请检查连接后重试。"
+  },
+  "resource": {
+    "uploadTitle": "上传资源",
+    "loginToUpload": "登录后可上传资源",
+    "uploadTooltip": "上传资源",
+    "refresh": "刷新文件列表",
+    "delete": "删除选中文件",
+    "myFiles": "我的文件",
+    "noFiles": "暂无文件",
+    "selectFile": "选择文件",
+    "fileHint": "支持 PDF、Word、PPT、Excel（最大 {size}MB，可多选）",
+    "tags": "标签（可选，逗号分隔）",
+    "tagsPlaceholder": "例如：数学, 高中, 代数",
+    "makePublic": "设为公共资源（所有用户可见）",
+    "privateNote": "上传的资源为私有，仅您本人可见。",
+    "cancel": "取消",
+    "confirmUpload": "确认上传",
+    "uploading": "上传中...",
+    "uploadingProgress": "上传中 ({current}/{total})...",
+    "uploadFailed": "以下文件上传失败：",
+    "unknownError": "未知错误",
+    "networkError": "网络错误",
+    "deleteConfirm": "确定删除「{name}」吗？此操作不可恢复。",
+    "deleteFailed": "删除失败：",
+    "deleteNetworkError": "删除请求失败，请检查网络连接",
+    "collapsePanel": "收起侧边栏",
+    "expandPanel": "展开侧边栏"
+  },
+  "error": {
+    "analysisFailed": "分析失败",
+    "requestFailed": "请求失败，请检查后端服务是否运行"
+  }
+}

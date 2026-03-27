@@ -8,8 +8,8 @@
         </svg>
       </div>
 
-      <h1 class="text-xl font-semibold text-gray-800 mb-1.5 tracking-tight">欢迎使用 Lumina Learning</h1>
-      <p class="text-gray-400 mb-8 text-sm">登录后可发起 AI 分析，解锁全部功能</p>
+      <h1 class="text-xl font-semibold text-gray-800 mb-1.5 tracking-tight">{{ t('login.title') }}</h1>
+      <p class="text-gray-400 mb-8 text-sm">{{ t('login.subtitle') }}</p>
 
       <!-- Google 登录 -->
       <a
@@ -22,7 +22,7 @@
           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
         </svg>
-        使用 Google 登录
+        {{ t('login.google') }}
       </a>
 
       <!-- 微信登录 -->
@@ -33,13 +33,13 @@
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#07C160">
           <path d="M8.69 11.52c-.6 0-1.08-.47-1.08-1.06 0-.58.48-1.06 1.08-1.06.6 0 1.08.48 1.08 1.06 0 .59-.48 1.06-1.08 1.06zm5.62 0c-.6 0-1.08-.47-1.08-1.06 0-.58.48-1.06 1.08-1.06.6 0 1.08.48 1.08 1.06 0 .59-.48 1.06-1.08 1.06zM12 2C6.48 2 2 6.04 2 11c0 3.04 1.55 5.73 3.95 7.44L5 21l2.87-1.56C9.17 19.8 10.55 20 12 20c5.52 0 10-4.04 10-9s-4.48-9-10-9z"/>
         </svg>
-        使用微信登录
+        {{ t('login.wechat') }}
       </a>
 
       <!-- 分隔线 -->
       <div class="flex items-center my-5">
         <div class="flex-1 h-px bg-[#e2dacc]"></div>
-        <span class="px-4 text-xs text-gray-400">暂不登录</span>
+        <span class="px-4 text-xs text-gray-400">{{ t('login.divider') }}</span>
         <div class="flex-1 h-px bg-[#e2dacc]"></div>
       </div>
 
@@ -48,19 +48,21 @@
         @click="visitAsGuest"
         class="text-gray-400 hover:text-gray-600 text-sm transition-colors"
       >
-        游客模式浏览
+        {{ t('login.guest') }}
       </button>
 
       <p class="mt-6 text-xs text-gray-400">
-        登录即代表同意服务条款与隐私政策
+        {{ t('login.terms') }}
       </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
+const { t } = useI18n()
 const router = useRouter()
 
 // 用于构建完整 OAuth 跳转链接（OAuth 需要浏览器直接跳转，不走 fetch）

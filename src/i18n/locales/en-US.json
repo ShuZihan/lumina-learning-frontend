@@ -1,0 +1,92 @@
+{
+  "login": {
+    "title": "Welcome to Lumina Learning",
+    "subtitle": "Sign in to start AI analysis and unlock all features",
+    "google": "Sign in with Google",
+    "wechat": "Sign in with WeChat",
+    "divider": "Skip for now",
+    "guest": "Browse as Guest",
+    "terms": "By signing in you agree to our Terms of Service and Privacy Policy"
+  },
+  "nav": {
+    "guest": "Guest",
+    "user": "User",
+    "admin": "Admin",
+    "login": "Sign In",
+    "logout": "Sign Out"
+  },
+  "home": {
+    "welcomeGuest": "Welcome to Lumina Learning",
+    "welcomeBack": "Welcome back, {name}!",
+    "description": "Select a resource on the left — AI will automatically generate a study plan, extract key points, or create mock exam questions to boost your learning.",
+    "loginLink": "Sign in",
+    "loginPrompt": " to upload your own private resources."
+  },
+  "auth": {
+    "loading": "Signing in, please wait...",
+    "failed": "Sign-in failed, please try again"
+  },
+  "chat": {
+    "reset": "Start Over",
+    "selectPrompt": "Select a feature to begin analysis",
+    "plan": {
+      "title": "Generate Study Plan",
+      "desc": "Create a phased study plan from the resource, with progress schedule and method suggestions.",
+      "action": "Generate"
+    },
+    "keyPoints": {
+      "title": "Extract Key Points",
+      "desc": "Automatically distill core knowledge points and key conclusions for quick review.",
+      "action": "Extract"
+    },
+    "mockQuestions": {
+      "title": "Generate Mock Exam",
+      "desc": "Generate multiple-choice, true/false, and short-answer questions with answer keys.",
+      "action": "Generate"
+    },
+    "placeholder": "Ask a follow-up question about the document...",
+    "keyHint": "Enter to send · Shift+Enter for newline",
+    "copy": "Copy",
+    "copied": "Copied",
+    "analysisType": {
+      "learning_plan": "Study Plan",
+      "key_points": "Key Points",
+      "mock_questions": "Mock Exam",
+      "default": "Analysis Result"
+    },
+    "errorOccurred": "Sorry, an error occurred: ",
+    "retryLater": "Please try again later",
+    "networkError": "Network request failed, please check your connection and retry."
+  },
+  "resource": {
+    "uploadTitle": "Upload Resource",
+    "loginToUpload": "Sign in to upload resources",
+    "uploadTooltip": "Upload resource",
+    "refresh": "Refresh file list",
+    "delete": "Delete selected file",
+    "myFiles": "My Files",
+    "noFiles": "No files",
+    "selectFile": "Select files",
+    "fileHint": "Supports PDF, Word, PPT, Excel (max {size}MB, multiple files allowed)",
+    "tags": "Tags (optional, comma-separated)",
+    "tagsPlaceholder": "e.g. math, high school, algebra",
+    "makePublic": "Make public (visible to all users)",
+    "privateNote": "Uploaded resources are private and only visible to you.",
+    "cancel": "Cancel",
+    "confirmUpload": "Upload",
+    "uploading": "Uploading...",
+    "uploadingProgress": "Uploading ({current}/{total})...",
+    "uploadFailed": "The following files failed to upload:",
+    "unknownError": "Unknown error",
+    "networkError": "Network error",
+    "deleteConfirm": "Delete \"{name}\"? This action cannot be undone.",
+    "deleteFailed": "Delete failed: ",
+    "deleteNetworkError": "Delete request failed, please check your network connection",
+    "collapsePanel": "Collapse sidebar",
+    "expandPanel": "Expand sidebar"
+  },
+  "error": {
+    "analysisFailed": "Analysis failed",
+    "requestFailed": "Request failed, please check if the backend service is running"
+  }
+}
