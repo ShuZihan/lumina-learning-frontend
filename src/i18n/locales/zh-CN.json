@@ -13,7 +13,8 @@
     "user": "用户",
     "admin": "管理员",
     "login": "登录",
-    "logout": "退出"
+    "loginOrRegister": "登录 / 注册",
+    "logout": "退出登录"
   },
   "home": {
     "welcomeGuest": "欢迎使用 Lumina Learning",

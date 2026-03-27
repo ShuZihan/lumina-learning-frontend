@@ -13,6 +13,7 @@
     "user": "User",
     "admin": "Admin",
     "login": "Sign In",
+    "loginOrRegister": "Sign In / Register",
     "logout": "Sign Out"
   },
   "home": {

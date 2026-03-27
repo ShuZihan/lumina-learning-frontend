@@ -19,35 +19,53 @@
           <h1 class="font-bold text-base md:text-lg text-gray-800">Lumina Learning</h1>
         </div>
 
-        <!-- 右侧：用户信息 + 退出 + 语言切换 -->
-        <div class="flex items-center gap-3">
-          <!-- 游客状态 -->
-          <div v-if="auth.isGuest" class="flex items-center gap-2">
-            <span class="text-sm text-gray-700 font-medium">{{ t('nav.guest') }}</span>
-          </div>
-          <!-- 登录用户状态 -->
-          <div v-else class="flex items-center gap-2">
-            <img
-              v-if="auth.user?.avatar"
-              :src="auth.user.avatar"
-              class="w-8 h-8 rounded-full border-2 border-white/60 shadow-sm"
-              :alt="auth.user.nickname || t('nav.user')"
-              referrerpolicy="no-referrer"
-            />
-            <span v-else class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-sm font-medium shadow-sm">
-              {{ (auth.user?.nickname || '?')[0] }}
-            </span>
-            <span class="text-sm text-gray-700 font-medium hidden sm:block">{{ auth.user?.nickname || t('nav.user') }}</span>
-            <span v-if="auth.isAdmin" class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">{{ t('nav.admin') }}</span>
-          </div>
-          <button
-            @click="handleLogout"
+        <!-- 右侧：用户区 + 语言切换 -->
+        <div class="flex items-center gap-2">
+          <!-- 游客状态：登录/注册按钮 -->
+          <router-link
+            v-if="auth.isGuest"
+            to="/login"
             class="px-3 py-1.5 rounded-lg bg-white/50 hover:bg-white/80 text-gray-600 text-sm border border-white/50 transition-all"
           >
-            {{ auth.isGuest ? t('nav.login') : t('nav.logout') }}
-          </button>
+            {{ t('nav.loginOrRegister') }}
+          </router-link>
 
-          <!-- 语言切换：固定在最右侧，w-8 保证中英文宽度一致 -->
+          <!-- 登录用户状态：hover 下拉退出 -->
+          <div v-else class="relative group">
+            <!-- 触发区域 -->
+            <div class="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white/60 cursor-pointer transition-all select-none">
+              <img
+                v-if="auth.user?.avatar"
+                :src="auth.user.avatar"
+                class="w-7 h-7 rounded-full border-2 border-white/60 shadow-sm"
+                :alt="auth.user.nickname || t('nav.user')"
+                referrerpolicy="no-referrer"
+              />
+              <span v-else class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-medium shadow-sm">
+                {{ (auth.user?.nickname || '?')[0] }}
+              </span>
+              <span class="text-sm text-gray-700 font-medium hidden sm:block">{{ auth.user?.nickname || t('nav.user') }}</span>
+              <span v-if="auth.isAdmin" class="px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">{{ t('nav.admin') }}</span>
+              <!-- 下拉箭头 -->
+              <svg class="w-3 h-3 text-gray-400 transition-transform duration-150 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+
+            <!-- 下拉菜单 -->
+            <div class="absolute right-0 top-[calc(100%+4px)] w-36 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-150 z-[80]">
+              <div class="glass rounded-xl shadow-lg py-1 border border-white/40">
+                <button
+                  @click="handleLogout"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-600 hover:text-red-500 hover:bg-white/60 transition-colors rounded-lg"
+                >
+                  {{ t('nav.logout') }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 语言切换：固定最右侧 -->
           <button
             @click="toggleLocale"
             class="w-8 h-8 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-white/60 transition-all border border-transparent hover:border-white/50 flex items-center justify-center"
