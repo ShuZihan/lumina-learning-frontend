@@ -83,16 +83,23 @@
         @resource-selected="onResourceSelected"
       />
 
-      <main
-        class="flex-1 px-4 md:px-8"
-        :class="chatActive ? 'overflow-hidden flex flex-col pt-4 pb-2' : 'overflow-y-auto pt-8 pb-24'"
-      >
-        <div
-          class="container mx-auto max-w-5xl"
-          :class="chatActive ? 'flex-1 flex flex-col min-h-0' : ''"
-        >
-          <!-- 欢迎区域（未选择资源时） -->
-          <div v-if="!selectedResource && !chatActive" class="glass rounded-2xl p-8 mb-8 text-center">
+      <!-- ChatPanel 直接占据全屏 -->
+      <div class="flex-1 min-w-0 overflow-x-hidden">
+        <ChatPanel
+          v-if="selectedResource"
+          class="h-full"
+          :selected-resource="selectedResource"
+          :resource-name="selectedResourceName"
+          :analysis-type="selectedAnalysisType ?? ''"
+          :initial-message="initialMessage"
+          :loading="loading"
+          @reset="onReset"
+          @analysis-start="onAnalysisStart"
+        />
+
+        <!-- 未选择资源时的提示 -->
+        <div v-else class="h-full flex items-center justify-center bg-gray-50">
+          <div class="glass rounded-2xl p-8 text-center">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">
               {{ auth.isGuest ? t('home.welcomeGuest') : t('home.welcomeBack', { name: auth.user?.nickname || t('nav.user') }) }}
             </h2>
@@ -103,21 +110,8 @@
               <router-link to="/login" class="text-blue-500 hover:underline">{{ t('home.loginLink') }}</router-link>{{ t('home.loginPrompt') }}
             </p>
           </div>
-
-          <!-- 对话面板 -->
-          <ChatPanel
-            v-if="chatActive && selectedResource"
-            class="flex-1 min-h-0"
-            :selected-resource="selectedResource"
-            :resource-name="selectedResourceName"
-            :analysis-type="selectedAnalysisType ?? ''"
-            :initial-message="initialMessage"
-            :loading="loading"
-            @reset="onReset"
-            @analysis-start="onAnalysisStart"
-          />
         </div>
-      </main>
+      </div>
     </div>
   </div>
 </template>
@@ -140,7 +134,6 @@ const sidebarRef = ref<{ toggle: () => void } | null>(null)
 const selectedResource = ref<string | null>(null)
 const selectedResourceName = ref('')
 const selectedAnalysisType = ref<string | null>(null)
-const chatActive = ref(false)
 const initialMessage = ref('')
 const loading = ref(false)
 
@@ -149,7 +142,6 @@ const toggleLocale = () => setLocale(locale.value === 'zh-CN' ? 'en-US' : 'zh-CN
 const onResourceSelected = (filename: string, originalFilename: string) => {
   selectedResource.value = filename || null
   selectedResourceName.value = originalFilename
-  chatActive.value = !!filename
   initialMessage.value = ''
   selectedAnalysisType.value = null
 }
@@ -202,7 +194,6 @@ const onAnalysisStart = async (filename: string, analysisType: string) => {
       const data = await response.json()
       if (data.success) {
         initialMessage.value = data.result.content
-        chatActive.value = true
       } else {
         alert(t('error.analysisFailed') + ': ' + (data.detail || t('resource.unknownError')))
       }
@@ -216,7 +207,6 @@ const onAnalysisStart = async (filename: string, analysisType: string) => {
 }
 
 const onReset = () => {
-  chatActive.value = false
   initialMessage.value = ''
   selectedAnalysisType.value = null
 }
