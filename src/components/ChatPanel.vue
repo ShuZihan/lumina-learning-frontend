@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between px-0 py-3 shrink-0">
       <div class="min-w-0">
         <h3 class="text-sm font-semibold text-gray-800 tracking-tight">{{ analysisTypeText }}</h3>
-        <p class="text-xs text-gray-400 mt-0.5 truncate">{{ resourceName }}</p>
+        <p class="text-xs text-gray-400 mt-0.5 truncate">{{ resourceName || '通用对话' }}</p>
       </div>
       <div class="relative group">
         <button
@@ -42,7 +42,7 @@
         <p class="text-sm text-gray-400">{{ t('chat.selectPrompt') }}</p>
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full max-w-5xl px-2 md:px-3">
           <!-- 学习计划卡片 -->
-          <div class="relative overflow-hidden bg-white rounded-2xl cursor-pointer group shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" @click="emit('analysis-start', selectedResource, 'learning_plan')">
+          <div class="relative overflow-hidden bg-white rounded-2xl cursor-pointer group shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" @click="handleFeatureClick('learning_plan')">
             <!-- 装饰性渐变背景 -->
             <div class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
@@ -58,14 +58,14 @@
               </div>
 
               <!-- 标题 -->
-              <h4 class="text-lg font-bold text-gray-800 mb-2 tracking-tight group-hover:text-blue-600 transition-colors duration-200">{{ t('chat.plan.title') }}</h4>
+              <h4 class="text-lg font-bold text-gray-800 mb-2 tracking-tight group-hover:text-blue-600 transition-colors duration-200">{{ t('feature.plan.title') }}</h4>
 
               <!-- 描述 -->
-              <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ t('chat.plan.desc') }}</p>
+              <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ t('feature.plan.desc') }}</p>
 
               <!-- 操作按钮 -->
               <div class="flex items-center gap-2 text-blue-600 font-semibold text-sm">
-                <span>{{ t('chat.plan.action') }}</span>
+                <span>{{ t('feature.plan.action') }}</span>
                 <svg style="width:16px;height:16px" class="group-hover:translate-x-1 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </div>
             </div>
@@ -75,7 +75,7 @@
           </div>
 
           <!-- 重点知识卡片 -->
-          <div class="relative overflow-hidden bg-white rounded-2xl cursor-pointer group shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" @click="emit('analysis-start', selectedResource, 'key_points')">
+          <div class="relative overflow-hidden bg-white rounded-2xl cursor-pointer group shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" @click="handleFeatureClick('key_points')">
             <!-- 装饰性渐变背景 -->
             <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
@@ -91,14 +91,14 @@
               </div>
 
               <!-- 标题 -->
-              <h4 class="text-lg font-bold text-gray-800 mb-2 tracking-tight group-hover:text-emerald-600 transition-colors duration-200">{{ t('chat.keyPoints.title') }}</h4>
+              <h4 class="text-lg font-bold text-gray-800 mb-2 tracking-tight group-hover:text-emerald-600 transition-colors duration-200">{{ t('feature.keyPoints.title') }}</h4>
 
               <!-- 描述 -->
-              <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ t('chat.keyPoints.desc') }}</p>
+              <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ t('feature.keyPoints.desc') }}</p>
 
               <!-- 操作按钮 -->
               <div class="flex items-center gap-2 text-emerald-600 font-semibold text-sm">
-                <span>{{ t('chat.keyPoints.action') }}</span>
+                <span>{{ t('feature.keyPoints.action') }}</span>
                 <svg style="width:16px;height:16px" class="group-hover:translate-x-1 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </div>
             </div>
@@ -108,7 +108,7 @@
           </div>
 
           <!-- 模拟考题卡片 -->
-          <div class="relative overflow-hidden bg-white rounded-2xl cursor-pointer group shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" @click="emit('analysis-start', selectedResource, 'mock_questions')">
+          <div class="relative overflow-hidden bg-white rounded-2xl cursor-pointer group shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" @click="handleFeatureClick('mock_questions')">
             <!-- 装饰性渐变背景 -->
             <div class="absolute inset-0 bg-gradient-to-br from-violet-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
@@ -124,14 +124,14 @@
               </div>
 
               <!-- 标题 -->
-              <h4 class="text-lg font-bold text-gray-800 mb-2 tracking-tight group-hover:text-violet-600 transition-colors duration-200">{{ t('chat.mockQuestions.title') }}</h4>
+              <h4 class="text-lg font-bold text-gray-800 mb-2 tracking-tight group-hover:text-violet-600 transition-colors duration-200">{{ t('feature.mockQuestions.title') }}</h4>
 
               <!-- 描述 -->
-              <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ t('chat.mockQuestions.desc') }}</p>
+              <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ t('feature.mockQuestions.desc') }}</p>
 
               <!-- 操作按钮 -->
               <div class="flex items-center gap-2 text-violet-600 font-semibold text-sm">
-                <span>{{ t('chat.mockQuestions.action') }}</span>
+                <span>{{ t('feature.mockQuestions.action') }}</span>
                 <svg style="width:16px;height:16px" class="group-hover:translate-x-1 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </div>
             </div>
@@ -237,7 +237,7 @@ interface Message {
 }
 
 const props = defineProps<{
-  selectedResource: string
+  selectedResource: string | null
   resourceName: string
   analysisType: string
   initialMessage: string
@@ -248,6 +248,14 @@ const emit = defineEmits<{
   reset: []
   'analysis-start': [filename: string, analysisType: string]
 }>()
+
+const handleFeatureClick = (analysisType: string) => {
+  if (!props.selectedResource) {
+    alert(t('common.pleaseSelectResource'))
+    return
+  }
+  emit('analysis-start', props.selectedResource, analysisType)
+}
 
 const messagesEl = ref<HTMLElement | null>(null)
 const inputEl = ref<HTMLTextAreaElement | null>(null)
