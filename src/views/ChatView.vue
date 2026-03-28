@@ -86,7 +86,6 @@
       <!-- ChatPanel 直接占据全屏 -->
       <div class="flex-1 min-w-0 overflow-x-hidden">
         <ChatPanel
-          v-if="selectedResource"
           class="h-full"
           :selected-resource="selectedResource"
           :resource-name="selectedResourceName"
@@ -96,21 +95,6 @@
           @reset="onReset"
           @analysis-start="onAnalysisStart"
         />
-
-        <!-- 未选择资源时的提示 -->
-        <div v-else class="h-full flex items-center justify-center bg-gray-50">
-          <div class="glass rounded-2xl p-8 text-center">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">
-              {{ auth.isGuest ? t('home.welcomeGuest') : t('home.welcomeBack', { name: auth.user?.nickname || t('nav.user') }) }}
-            </h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">
-              {{ t('home.description') }}
-            </p>
-            <p v-if="auth.isGuest" class="text-gray-400 text-sm mt-3">
-              <router-link to="/login" class="text-blue-500 hover:underline">{{ t('home.loginLink') }}</router-link>{{ t('home.loginPrompt') }}
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   </div>
