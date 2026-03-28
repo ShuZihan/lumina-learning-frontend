@@ -14,7 +14,7 @@ const router = createRouter({
     },
     {
       path: '/',
-      component: () => import('../views/HomeView.vue'),
+      component: () => import('../views/ChatView.vue'),
       // 首页对所有角色可见，但部分功能需要登录
       meta: { requiresAuth: false },
     },
