@@ -89,5 +89,26 @@
   "error": {
     "analysisFailed": "Analysis failed",
     "requestFailed": "Request failed, please check if the backend service is running"
+  },
+  "common": {
+    "selectResourceTip": "Select a course from the left sidebar to start",
+    "pleaseSelectResource": "Please select a file first to use this analysis feature"
+  },
+  "feature": {
+    "plan": {
+      "title": "Generate Study Plan",
+      "desc": "Create a phased study plan from the resource, with progress schedule and method suggestions.",
+      "action": "Generate"
+    },
+    "keyPoints": {
+      "title": "Extract Key Points",
+      "desc": "Automatically distill core knowledge points and key conclusions for quick review.",
+      "action": "Extract"
+    },
+    "mockQuestions": {
+      "title": "Generate Mock Exam",
+      "desc": "Generate multiple-choice, true/false, and short-answer questions with answer keys.",
+      "action": "Generate"
+    }
   }
 }
