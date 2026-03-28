@@ -28,7 +28,7 @@
     "failed": "Sign-in failed, please try again"
   },
   "chat": {
-    "reset": "Start Over",
+    "reset": "Restart Chat",
     "selectPrompt": "Select a feature to begin analysis",
     "plan": {
       "title": "Generate Study Plan",

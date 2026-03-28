@@ -28,7 +28,7 @@
     "failed": "登录失败，请重试"
   },
   "chat": {
-    "reset": "重新选择",
+    "reset": "重新开始对话",
     "selectPrompt": "选择一个功能开始分析",
     "plan": {
       "title": "生成学习计划",
