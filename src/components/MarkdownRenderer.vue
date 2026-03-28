@@ -1,5 +1,5 @@
 <template>
-  <div :id="containerId" class="markdown-content chat-markdown"></div>
+  <div :id="containerId" class="markdown-content chat-markdown" style="width: 100% !important; max-width: 100% !important;"></div>
 </template>
 
 <script setup lang="ts">
@@ -68,6 +68,10 @@ onMounted(() => {
       previewer: {
         enablePreviewerBubble: false,
       },
+      // 禁用所有外部插件
+      externals: {
+        echarts: null
+      }
     })
 })
 
@@ -84,9 +88,84 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
-.markdown-content :deep(.cherry) {
-  --shadow-md: none;
-  --drag-border-color: transparent;
+<style>
+/* 确保所有cherry-markdown元素背景透明 */
+.markdown-content .cherry,
+.markdown-content .cherry * {
+  --shadow-md: none !important;
+  --drag-border-color: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 表格元素特殊处理 */
+.markdown-content .cherry-table {
+  width: auto !important;
+  min-width: 100% !important;
+  max-width: unset !important;
+}
+
+.markdown-content .cherry-table th,
+.markdown-content .cherry-table td {
+  min-width: 100px !important; /* 恢复Cherry默认的最小单元格宽度 */
+}
+
+/* 表格容器超宽时滚动 */
+.markdown-content .cherry-table-container {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  padding-bottom: 0.5rem !important;
+}
+
+/* Cherry Markdown公式外层容器 - 关键！滚动容器 */
+.markdown-content .Cherry-Math {
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  padding: 0.5rem 0.2rem !important;
+  margin: 0.5rem 0 !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  /* 强制不换行 */
+  white-space: nowrap !important;
+}
+
+/* 块级公式容器 - 允许超出父容器宽度，由父容器提供滚动 */
+.markdown-content .Cherry-Math .katex-display {
+  margin: 0 !important;
+  display: inline-block !important;
+  min-width: fit-content !important;
+  max-width: unset !important;
+  width: auto !important;
+}
+
+/* 强制KaTeX内部元素不限制宽度 */
+.markdown-content .Cherry-Math .katex,
+.markdown-content .Cherry-Math .katex-html {
+  max-width: unset !important;
+  width: auto !important;
+}
+
+/* KaTeX公式本身允许超出，由父容器滚动 */
+.markdown-content .katex {
+  max-width: unset !important;
+}
+
+.markdown-content .katex-html {
+  overflow-x: visible !important;
+}
+
+/* 行内公式外层容器 */
+.markdown-content .Cherry-InlineMath {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  vertical-align: middle !important;
+  display: inline-block !important;
+}
+
+/* 行内公式处理 */
+.markdown-content .katex-inline {
+  max-width: unset !important;
 }
 </style>

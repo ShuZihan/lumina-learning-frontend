@@ -14,8 +14,7 @@
   >
     <!-- 桌面端图标条 -->
     <div
-      class="hidden md:flex w-10 flex-shrink-0 flex-col items-center pt-2 relative border-r border-black/[0.06]"
-      style="background-color: #ffffff;"
+      class="hidden md:flex w-10 flex-shrink-0 flex-col items-center pt-2 relative border-r border-black/[0.06] bg-gray-50"
     >
       <button
         @click="panelOpen = !panelOpen"
@@ -32,9 +31,8 @@
 
     <!-- 滑动面板 -->
     <div
-      class="relative flex flex-col overflow-hidden transition-[width] duration-150 ease-in-out border-r border-black/[0.06]"
+      class="relative flex flex-col overflow-hidden transition-[width] duration-150 ease-in-out border-r border-black/[0.06] bg-gray-50"
       :style="{ width: panelOpen ? panelWidth + 'px' : '0px' }"
-      style="background-color: #ffffff;"
     >
       <!-- 顶部刷新进度条 -->
       <div v-if="loading" class="absolute top-0 left-0 right-0 h-0.5 overflow-hidden z-10">
@@ -94,7 +92,7 @@
               <span class="ml-auto text-gray-400 font-normal">{{ publicFiles.length }}</span>
             </button>
             <div v-if="publicOpen" class="ml-3 mt-0.5 space-y-px">
-              <p v-if="publicFiles.length === 0" class="text-xs text-gray-400 px-2 py-1">{{ t('resource.noFiles') }}</p>
+              <p v-if="publicFiles.length === 0" class="text-sm text-gray-400 px-2 py-1">{{ t('resource.noFiles') }}</p>
               <div
                 v-for="resource in publicFiles"
                 :key="resource.id"
@@ -103,8 +101,8 @@
                 @click="selectResource(resource)"
               >
                 <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                <span class="text-xs text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
-                <span class="text-xs text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
+                <span class="text-sm text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
+                <span class="text-sm text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
               </div>
             </div>
           </div>
@@ -121,7 +119,7 @@
               <span class="ml-auto text-gray-400 font-normal">{{ myFiles.length }}</span>
             </button>
             <div v-if="mineOpen" class="ml-3 mt-0.5 space-y-px">
-              <p v-if="myFiles.length === 0" class="text-xs text-gray-400 px-2 py-1">{{ t('resource.noFiles') }}</p>
+              <p v-if="myFiles.length === 0" class="text-sm text-gray-400 px-2 py-1">{{ t('resource.noFiles') }}</p>
               <div
                 v-for="resource in myFiles"
                 :key="resource.id"
@@ -130,8 +128,8 @@
                 @click="selectResource(resource)"
               >
                 <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                <span class="text-xs text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
-                <span class="text-xs text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
+                <span class="text-sm text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
+                <span class="text-sm text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
               </div>
             </div>
           </div>
@@ -163,7 +161,7 @@
                 @change="onFileSelect"
                 class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-500/10 file:text-blue-600 hover:file:bg-blue-500/20 cursor-pointer"
               />
-              <p class="text-xs text-gray-400 mt-1">{{ t('resource.fileHint', { size: maxFileSizeMB }) }}</p>
+              <p class="text-sm text-gray-400 mt-1">{{ t('resource.fileHint', { size: maxFileSizeMB }) }}</p>
               <ul v-if="uploadForm.files.length > 0" class="mt-1.5 flex flex-wrap gap-1">
                 <li
                   v-for="(f, i) in uploadForm.files"
@@ -189,7 +187,7 @@
               <input type="checkbox" id="isPublicCheck" v-model="uploadForm.isPublic" class="w-4 h-4 rounded accent-blue-500" />
               <label for="isPublicCheck" class="text-sm text-gray-700 cursor-pointer">{{ t('resource.makePublic') }}</label>
             </div>
-            <p v-else class="text-xs text-gray-400 bg-white/40 rounded-lg px-3 py-2">{{ t('resource.privateNote') }}</p>
+            <p v-else class="text-sm text-gray-400 bg-white/40 rounded-lg px-3 py-2">{{ t('resource.privateNote') }}</p>
           </div>
           <div class="flex gap-3 mt-6">
             <button @click="closeUploadModal" class="flex-1 py-2 rounded-xl bg-white/50 text-gray-600 text-sm font-medium hover:bg-white/80 transition-all border border-[#d1d7dc]">{{ t('resource.cancel') }}</button>
@@ -223,7 +221,7 @@ const isMobile = ref(window.innerWidth < 768)
 // 面板开关状态（桌面默认展开，移动端默认收起）
 const panelOpen = ref(!isMobile.value)
 // 面板宽度（可拖拽调整）
-const panelWidth = ref(240)
+const panelWidth = ref(280)
 
 interface Resource {
   id: string
