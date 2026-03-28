@@ -89,5 +89,26 @@
   "error": {
     "analysisFailed": "分析失败",
     "requestFailed": "请求失败，请检查后端服务是否运行"
+  },
+  "common": {
+    "selectResourceTip": "请从左侧选择课件开始使用",
+    "pleaseSelectResource": "请先选择文件才能使用该分析功能"
+  },
+  "feature": {
+    "plan": {
+      "title": "生成学习计划",
+      "desc": "根据资源内容生成阶段性学习计划，包含进度安排与方法建议。",
+      "action": "开始生成"
+    },
+    "keyPoints": {
+      "title": "提取重点知识",
+      "desc": "自动提炼核心知识点与关键结论，便于快速复习和记忆。",
+      "action": "开始提取"
+    },
+    "mockQuestions": {
+      "title": "生成模拟考题",
+      "desc": "生成选择题、判断题、简答题模拟试卷，并附参考答案。",
+      "action": "开始生成"
+    }
   }
 }
