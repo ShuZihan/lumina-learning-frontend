@@ -23,7 +23,7 @@ export function detectLocale(): string {
  * 一期：从本地JSON动态导入（自动code-split）
  * 二期迁移只需修改此函数为API请求即可，上层逻辑无需改动
  */
-async function loadLocaleMessages(locale: string): Promise<Record<string, string>> {
+async function loadLocaleMessages(locale: string): Promise<Record<string, any>> {
   if (locale === 'zh-CN') return zhCN
   const messages = await import(`./locales/${locale}.json`)
   return messages.default
