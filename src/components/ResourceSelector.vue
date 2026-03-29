@@ -17,7 +17,7 @@
       class="hidden md:flex w-10 flex-shrink-0 flex-col items-center pt-2 relative border-r border-black/[0.06] bg-gray-50"
     >
       <button
-        @click="panelOpen = !panelOpen"
+        @click="togglePanel"
         class="w-8 h-8 rounded-md flex items-center justify-center transition-all"
         :class="panelOpen ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'"
         :title="panelOpen ? t('resource.collapsePanel') : t('resource.expandPanel')"
@@ -34,16 +34,48 @@
       class="relative flex flex-col overflow-hidden transition-[width] duration-150 ease-in-out border-r border-black/[0.06] bg-gray-50"
       :style="{ width: panelOpen ? panelWidth + 'px' : '0px' }"
     >
-      <!-- 顶部刷新进度条 -->
-      <div v-if="loading" class="absolute top-0 left-0 right-0 h-0.5 overflow-hidden z-10">
+      <!-- 顶部刷新进度条（对应当前标签） -->
+      <div v-if="(activeTab === 'public' && publicTopLoading) || (activeTab === 'personal' && personalTopLoading)" class="absolute top-0 left-0 right-0 h-0.5 overflow-hidden z-10">
         <div class="h-full bg-blue-500 sidebar-loading-bar"></div>
       </div>
       <!-- 文件树 -->
-      <div class="flex-1 overflow-y-auto p-2" :style="{ minWidth: panelWidth + 'px' }">
+      <div class="flex-1 overflow-y-auto relative" :style="{ minWidth: panelWidth + 'px' }">
+        <!-- 首次进入大转圈加载（仅覆盖文件列表，不挡住顶部操作按钮） -->
+        <div
+          v-if="(activeTab === 'public' && publicFullLoading) || (activeTab === 'personal' && personalFullLoading)"
+          class="absolute left-0 right-0 bottom-0 top-[88px] flex items-center justify-center bg-gray-50/90 z-20"
+        >
+          <svg class="w-8 h-8 animate-spin text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" stroke-opacity="0.25" />
+            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+          </svg>
+        </div>
+
+        <!-- 顶部标签栏 -->
+        <div class="p-2 border-b border-gray-200/50">
+          <div class="flex gap-1 p-1 bg-white/40 rounded-lg">
+            <button
+              @click="activeTab = 'public'"
+              class="flex-1 py-1.5 px-2 rounded text-xs font-medium transition-all"
+              :class="activeTab === 'public' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:bg-white/30'"
+            >
+              公共资源
+            </button>
+            <button
+              @click="activeTab = 'personal'"
+              class="flex-1 py-1.5 px-2 rounded text-xs font-medium transition-all"
+              :class="activeTab === 'personal' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:bg-white/30'"
+              :disabled="auth.isGuest"
+            >
+              我的文件
+            </button>
+          </div>
+        </div>
+
         <!-- 顶部工具栏 -->
-        <div class="flex items-center gap-0.5 mb-1 px-1">
+        <div class="flex items-center gap-0.5 my-1 px-3">
           <button
-            @click="auth.isGuest ? router.push('/login') : showUploadModal = true"
+            @click="openUploadModal"
             :title="auth.isGuest ? t('resource.loginToUpload') : t('resource.uploadTooltip')"
             class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:text-blue-500 hover:bg-gray-100 transition-all"
           >
@@ -52,10 +84,9 @@
             </svg>
           </button>
           <button
-            @click="loadResources"
+            @click="refreshCurrentTab"
             :title="t('resource.refresh')"
-            :class="loading ? 'animate-spin text-blue-400' : 'text-gray-400 hover:text-blue-500 hover:bg-gray-100'"
-            class="w-6 h-6 flex items-center justify-center rounded transition-all"
+            class="w-6 h-6 flex items-center justify-center rounded transition-all text-gray-400 hover:text-blue-500 hover:bg-gray-100"
           >
             <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="23 4 23 10 17 10"/>
@@ -67,7 +98,7 @@
             @click="selectedResourceObj && canDelete(selectedResourceObj) && deleteResource(selectedResourceObj)"
             :title="t('resource.delete')"
             :disabled="!selectedResourceObj || !canDelete(selectedResourceObj)"
-            class="w-6 h-6 flex items-center justify-center rounded transition-all"
+            class="w-6 h-6 flex items-center justify-center rounded transition-all ml-auto"
             :class="selectedResourceObj && canDelete(selectedResourceObj)
               ? 'text-gray-400 hover:text-red-500 hover:bg-white/60'
               : 'text-gray-300 cursor-not-allowed'"
@@ -80,59 +111,38 @@
           </button>
         </div>
 
-        <!-- public/ 文件夹 -->
-          <div class="mb-0.5">
-            <button
-              @click="publicOpen = !publicOpen"
-              class="w-full flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium text-gray-500 hover:bg-white/40 transition-all"
-            >
-              <svg style="width:10px;height:10px" class="transition-transform duration-150 flex-shrink-0" :class="publicOpen ? 'rotate-90' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              <svg style="width:13px;height:13px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-              <span class="text-gray-600">public</span>
-              <span class="ml-auto text-gray-400 font-normal">{{ publicFiles.length }}</span>
-            </button>
-            <div v-if="publicOpen" class="ml-3 mt-0.5 space-y-px">
-              <p v-if="publicFiles.length === 0" class="text-sm text-gray-400 px-2 py-1">{{ t('resource.noFiles') }}</p>
-              <div
-                v-for="resource in publicFiles"
-                :key="resource.id"
-                class="flex items-center gap-1.5 px-2 py-1 rounded-lg cursor-pointer transition-all"
-                :class="selectedResource === resource.storage_key ? 'bg-blue-500/20' : 'hover:bg-white/40'"
-                @click="selectResource(resource)"
-              >
-                <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                <span class="text-sm text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
-                <span class="text-sm text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
-              </div>
-            </div>
+        <!-- 公共资源列表 -->
+        <div v-if="activeTab === 'public'" class="p-2 space-y-1">
+          <p v-if="publicResources.length === 0 && !publicFullLoading" class="text-center py-10 text-gray-400 text-xs">{{ t('resource.noFiles') }}</p>
+          <div
+            v-for="resource in publicResources"
+            :key="resource.id"
+            class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg cursor-pointer transition-all"
+            :class="selectedResource === resource.storage_key ? 'bg-blue-500/20' : 'hover:bg-white/40'"
+            @click="selectResource(resource)"
+          >
+            <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="text-sm text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
+            <span class="text-xs text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
           </div>
+        </div>
 
-          <!-- 我的文件/ 文件夹 -->
-          <div v-if="!auth.isGuest" class="mb-0.5">
-            <button
-              @click="mineOpen = !mineOpen"
-              class="w-full flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium text-gray-500 hover:bg-white/40 transition-all"
-            >
-              <svg style="width:10px;height:10px" class="transition-transform duration-150 flex-shrink-0" :class="mineOpen ? 'rotate-90' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              <svg style="width:13px;height:13px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-              <span class="text-gray-600">{{ t('resource.myFiles') }}</span>
-              <span class="ml-auto text-gray-400 font-normal">{{ myFiles.length }}</span>
-            </button>
-            <div v-if="mineOpen" class="ml-3 mt-0.5 space-y-px">
-              <p v-if="myFiles.length === 0" class="text-sm text-gray-400 px-2 py-1">{{ t('resource.noFiles') }}</p>
-              <div
-                v-for="resource in myFiles"
-                :key="resource.id"
-                class="flex items-center gap-1.5 px-2 py-1 rounded-lg cursor-pointer transition-all"
-                :class="selectedResource === resource.storage_key ? 'bg-blue-500/20' : 'hover:bg-white/40'"
-                @click="selectResource(resource)"
-              >
-                <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                <span class="text-sm text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
-                <span class="text-sm text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
-              </div>
-            </div>
+        <!-- 个人资源列表 -->
+        <div v-else class="p-2 space-y-1">
+          <p v-if="auth.isGuest" class="text-center py-10 text-gray-400 text-xs">请登录后查看个人文件</p>
+          <p v-else-if="personalResources.length === 0 && !personalFullLoading" class="text-center py-10 text-gray-400 text-xs">{{ t('resource.noFiles') }}</p>
+          <div
+            v-for="resource in personalResources"
+            :key="resource.id"
+            class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg cursor-pointer transition-all"
+            :class="selectedResource === resource.storage_key ? 'bg-blue-500/20' : 'hover:bg-white/40'"
+            @click="selectResource(resource)"
+          >
+            <svg style="width:13px;height:13px;flex-shrink:0" :class="getFileColor(resource.file_type)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="text-sm text-gray-700 truncate flex-1">{{ resource.original_filename }}</span>
+            <span class="text-xs text-gray-400 flex-shrink-0">{{ formatFileSize(resource.file_size) }}</span>
           </div>
+        </div>
       </div>
 
     </div>
@@ -183,11 +193,12 @@
                 class="w-full px-3 py-2 rounded-lg bg-white/60 border border-[#d1d7dc] text-sm text-gray-700 focus:outline-none focus:border-blue-400"
               />
             </div>
-            <div v-if="auth.isAdmin" class="flex items-center gap-3 p-3 rounded-lg bg-amber-50/80 border border-amber-200/50">
-              <input type="checkbox" id="isPublicCheck" v-model="uploadForm.isPublic" class="w-4 h-4 rounded accent-blue-500" />
-              <label for="isPublicCheck" class="text-sm text-gray-700 cursor-pointer">{{ t('resource.makePublic') }}</label>
+            <!-- 上传提示 -->
+            <div class="p-3 rounded-lg" :class="activeTab === 'public' ? 'bg-blue-50/80 border border-blue-200/50' : 'bg-gray-50/80 border border-gray-200/50'">
+              <p class="text-sm" :class="activeTab === 'public' ? 'text-blue-700' : 'text-gray-700'">
+                {{ activeTab === 'public' ? '⚠️ 您正在上传到公共资源区，所有用户都可以查看和使用该文件' : '🔒 您正在上传到个人空间，仅您自己可见' }}
+              </p>
             </div>
-            <p v-else class="text-sm text-gray-400 bg-white/40 rounded-lg px-3 py-2">{{ t('resource.privateNote') }}</p>
           </div>
           <div class="flex gap-3 mt-6">
             <button @click="closeUploadModal" class="flex-1 py-2 rounded-xl bg-white/50 text-gray-600 text-sm font-medium hover:bg-white/80 transition-all border border-[#d1d7dc]">{{ t('resource.cancel') }}</button>
@@ -202,11 +213,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
 import { useAuthStore } from '../stores/auth'
+import { useSidebar } from '../composables/useSidebar'
+import { StorageKeys, getItem, setItem } from '../utils/storage'
 
 const { t } = useI18n()
 
@@ -218,8 +231,9 @@ const auth = useAuthStore()
 const router = useRouter()
 const isMobile = ref(window.innerWidth < 768)
 
-// 面板开关状态（桌面默认展开，移动端默认收起）
-const panelOpen = ref(!isMobile.value)
+// 使用统一的侧边栏状态管理
+const { collapsed: panelOpen, toggle } = useSidebar()
+
 // 面板宽度（可拖拽调整）
 const panelWidth = ref(280)
 
@@ -237,18 +251,31 @@ interface Resource {
   created_at: string
 }
 
-const resources = ref<Resource[]>([])
-const loading = ref(true)
 const selectedResource = ref<string | null>(null)
 const maxFileSizeMB = Number(import.meta.env.VITE_MAX_FILE_SIZE_MB || 50)
 
-// 文件树折叠状态
-const publicOpen = ref(true)
-const mineOpen = ref(true)
+// 标签页状态
+const activeTab = ref<'public' | 'personal'>('public')
+// 公共资源状态
+const publicResources = ref<Resource[]>([])
+const publicTopLoading = ref(false)
+const publicFullLoading = ref(false)
+// 个人资源状态
+const personalResources = ref<Resource[]>([])
+const personalTopLoading = ref(false)
+const personalFullLoading = ref(false)
 
-const publicFiles = computed(() => resources.value.filter(r => r.is_public))
-const myFiles = computed(() => resources.value.filter(r => r.user_id === auth.user?.id))
-const selectedResourceObj = computed(() => resources.value.find(r => r.filename === selectedResource.value) ?? null)
+const selectedResourceObj = computed(() => {
+  if (activeTab.value === 'public') {
+    return publicResources.value.find(r => r.storage_key === selectedResource.value) ?? null
+  } else {
+    return personalResources.value.find(r => r.storage_key === selectedResource.value) ?? null
+  }
+})
+
+// 缓存配置：1小时有效期
+const CACHE_TTL = 3600 * 1000 // 1小时
+const CACHE_ENABLED = true
 
 // 上传 Modal
 const showUploadModal = ref(false)
@@ -263,12 +290,34 @@ const onFileSelect = (e: Event) => {
 const removeFile = (index: number) => {
   uploadForm.value.files.splice(index, 1)
 }
+const openUploadModal = () => {
+  if (auth.isGuest) {
+    router.push('/login')
+    return
+  }
+  // 根据当前标签自动设置公开属性
+  uploadForm.value = {
+    files: [],
+    tags: '',
+    isPublic: activeTab.value === 'public' // 公共标签默认公开，个人标签默认私有
+  }
+  showUploadModal.value = true
+}
+
 const closeUploadModal = () => {
   showUploadModal.value = false
   uploadForm.value = { files: [], tags: '', isPublic: false }
   uploadProgress.value = ''
   if (fileInputRef.value) fileInputRef.value.value = ''
 }
+// 新增：计算文件SHA256哈希
+const calculateFileHash = async (file: File): Promise<string> => {
+  const arrayBuffer = await file.arrayBuffer()
+  const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
 const doUpload = async () => {
   if (!uploadForm.value.files.length || uploading.value) return
   uploading.value = true
@@ -276,19 +325,31 @@ const doUpload = async () => {
   const total = uploadForm.value.files.length
   for (let i = 0; i < total; i++) {
     const file = uploadForm.value.files[i]
+    // 先计算文件哈希
+    uploadProgress.value = '正在校验文件...'
+    const contentHash = await calculateFileHash(file)
+
     uploadProgress.value = total > 1
       ? t('resource.uploadingProgress', { current: i + 1, total })
       : t('resource.uploading')
     try {
       const formData = new FormData()
       formData.append('file', file)
+      // 新文件系统接口参数：个人文件固定personal_global场景
+      formData.append('content_hash', contentHash)
+      formData.append('biz_type', 'personal_global')
+      formData.append('biz_id', auth.user?.id || '')
+      // tags和is_public暂时保留，后续需要的话再存到文件表
       formData.append('tags', uploadForm.value.tags)
       formData.append('is_public', String(uploadForm.value.isPublic))
-      const resp = await fetch(getApiUrl('/api/resources/upload'), {
+
+      const resp = await fetch(getApiUrl('/api/files/upload'), {
         method: 'POST', headers: getAuthHeaders(), body: formData,
       })
-      const data = await resp.json()
-      if (!resp.ok || !data.success) errors.push(`${file.name}：${data.detail || t('resource.unknownError')}`)
+      if (!resp.ok) {
+        const data = await resp.json()
+        errors.push(`${file.name}：${data.detail || t('resource.unknownError')}`)
+      }
     } catch {
       errors.push(`${file.name}：${t('resource.networkError')}`)
     }
@@ -297,7 +358,7 @@ const doUpload = async () => {
   uploadProgress.value = ''
   if (errors.length) alert(t('resource.uploadFailed') + '\n' + errors.join('\n'))
   closeUploadModal()
-  await loadResources()
+  await refreshCurrentTab()
 }
 
 const canDelete = (resource: Resource) => !auth.isGuest && (auth.isAdmin || resource.user_id === auth.user?.id)
@@ -305,7 +366,7 @@ const canDelete = (resource: Resource) => !auth.isGuest && (auth.isAdmin || reso
 const deleteResource = async (resource: Resource) => {
   if (!confirm(t('resource.deleteConfirm', { name: resource.original_filename }))) return
   try {
-    const resp = await fetch(getApiUrl(`/api/resources/${resource.id}`), {
+    const resp = await fetch(getApiUrl(`/api/files/${resource.id}`), {
       method: 'DELETE', headers: getAuthHeaders(),
     })
     if (resp.ok) {
@@ -313,7 +374,7 @@ const deleteResource = async (resource: Resource) => {
         selectedResource.value = null
         emit('resource-selected', '', '')
       }
-      await loadResources()
+      await refreshCurrentTab()
     } else {
       const data = await resp.json()
       alert(t('resource.deleteFailed') + (data.detail || t('resource.unknownError')))
@@ -348,19 +409,129 @@ const stopDrag = () => {
   document.removeEventListener('mouseup', stopDrag)
 }
 
-const loadResources = async () => {
-  loading.value = true
+// 加载公共资源
+const loadPublicResources = async (forceRefresh = false) => {
+  if (CACHE_ENABLED && !forceRefresh) {
+    const cached = getItem<Resource[]>(StorageKeys.RESOURCES_CACHE_PUBLIC)
+    const cacheTime = getItem<number>(StorageKeys.RESOURCES_CACHE_TIME_PUBLIC)
+    // 空数组也视为有效缓存
+    if (cached != null && cacheTime && Date.now() - cacheTime < CACHE_TTL) {
+      publicResources.value = cached
+      // 有缓存且不是用户主动刷新：直接用缓存，不发请求不刷新
+      return
+    }
+  }
+
+  // 只有无缓存 或 用户主动点击刷新时才发请求
+  if (forceRefresh) {
+    // 用户主动刷新：显示顶部加载条
+    publicTopLoading.value = true
+    publicFullLoading.value = false
+  } else {
+    // 首次进入无缓存：显示大转圈
+    publicTopLoading.value = false
+    publicFullLoading.value = true
+  }
+
   try {
-    const resp = await fetch(getApiUrl('/api/resources'), { headers: getAuthHeaders() })
-    resources.value = (await resp.json()).resources || []
-  } catch { console.error('Failed to load resources') }
-  finally { loading.value = false }
+    const resp = await fetch(getApiUrl('/api/files/list?biz_type=personal_global&biz_id=public&page_size=100'), {
+      headers: getAuthHeaders(),
+      cache: 'no-store' // 主动刷新时跳过浏览器HTTP缓存
+    })
+    if (resp.ok) {
+      const data = await resp.json()
+      publicResources.value = (data.data || []).filter((r: Resource) => r.is_public)
+      // 空数组也写入缓存
+      if (CACHE_ENABLED) {
+        setItem(StorageKeys.RESOURCES_CACHE_PUBLIC, publicResources.value)
+        setItem(StorageKeys.RESOURCES_CACHE_TIME_PUBLIC, Date.now())
+      }
+    }
+  } catch (e) {
+    console.error('公共资源加载失败', e)
+  } finally {
+    publicTopLoading.value = false
+    publicFullLoading.value = false
+  }
 }
+
+// 加载个人资源
+const loadPersonalResources = async (forceRefresh = false) => {
+  if (auth.isGuest) {
+    personalResources.value = []
+    return
+  }
+
+  if (CACHE_ENABLED && !forceRefresh) {
+    const cached = getItem<Resource[]>(StorageKeys.RESOURCES_CACHE_PERSONAL)
+    const cacheTime = getItem<number>(StorageKeys.RESOURCES_CACHE_TIME_PERSONAL)
+    // 空数组也视为有效缓存
+    if (cached != null && cacheTime && Date.now() - cacheTime < CACHE_TTL) {
+      personalResources.value = cached
+      // 有缓存且不是用户主动刷新：直接用缓存，不发请求不刷新
+      return
+    }
+  }
+
+  // 只有无缓存 或 用户主动点击刷新时才发请求
+  if (forceRefresh) {
+    // 用户主动刷新：显示顶部加载条
+    personalTopLoading.value = true
+    personalFullLoading.value = false
+  } else {
+    // 首次进入无缓存：显示大转圈
+    personalTopLoading.value = false
+    personalFullLoading.value = true
+  }
+
+  try {
+    const resp = await fetch(getApiUrl(`/api/files/list?biz_type=personal_global&biz_id=${auth.user?.id}&page_size=100`), {
+      headers: getAuthHeaders(),
+      cache: 'no-store' // 主动刷新时跳过浏览器HTTP缓存
+    })
+    if (resp.ok) {
+      const data = await resp.json()
+      personalResources.value = data.data || []
+      // 空数组也写入缓存
+      if (CACHE_ENABLED) {
+        setItem(StorageKeys.RESOURCES_CACHE_PERSONAL, personalResources.value)
+        setItem(StorageKeys.RESOURCES_CACHE_TIME_PERSONAL, Date.now())
+      }
+    }
+  } catch (e) {
+    console.error('个人资源加载失败', e)
+  } finally {
+    personalTopLoading.value = false
+    personalFullLoading.value = false
+  }
+}
+
+// 刷新当前标签资源
+const refreshCurrentTab = () => {
+  if (activeTab.value === 'public') {
+    loadPublicResources(true)
+  } else {
+    loadPersonalResources(true)
+  }
+}
+
+// 标签切换逻辑
+watch(activeTab, (tab) => {
+  if (tab === 'public' && publicResources.value.length === 0) {
+    loadPublicResources()
+  } else if (tab === 'personal' && personalResources.value.length === 0 && !auth.isGuest) {
+    loadPersonalResources()
+  }
+})
 
 const selectResource = (resource: Resource) => {
   selectedResource.value = resource.storage_key
   emit('resource-selected', resource.storage_key, resource.original_filename)
   if (isMobile.value) panelOpen.value = false
+}
+
+const togglePanel = () => {
+  toggle()
 }
 
 const getFileColor = (fileType: string) => {
@@ -377,12 +548,12 @@ const formatFileSize = (bytes: number) => {
 
 const handleResize = () => {
   isMobile.value = window.innerWidth < 768
-  if (!isMobile.value) panelOpen.value = true
+  // 不再强制展开/收起，尊重用户的存储偏好
 }
 
-defineExpose({ toggle: () => { panelOpen.value = !panelOpen.value } })
+defineExpose({ toggle: togglePanel })
 
-onMounted(() => { loadResources(); window.addEventListener('resize', handleResize) })
+onMounted(() => { loadPublicResources(); window.addEventListener('resize', handleResize) })
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   document.removeEventListener('mousemove', onDrag)

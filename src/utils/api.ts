@@ -1,3 +1,5 @@
+import { StorageKeys, getItem } from './storage'
+
 /**
  * API基础配置，自动适配开发/生产环境
  * 开发环境：走Vite代理到本地后端
@@ -17,6 +19,6 @@ export const getApiUrl = (path: string): string => {
 }
 
 export const getAuthHeaders = (): Record<string, string> => {
-  const token = localStorage.getItem('token')
+  const token = getItem<string>(StorageKeys.TOKEN)
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
