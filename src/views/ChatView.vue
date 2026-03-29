@@ -109,6 +109,7 @@ import ChatPanel from '../components/ChatPanel.vue'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
 import { useAuthStore } from '../stores/auth'
 import { setLocale } from '../i18n'
+import { removeItem, StorageKeys } from '../utils/storage'
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -200,6 +201,11 @@ const handleLogout = () => {
     router.push('/login')
   } else {
     auth.logout()
+    // 退出登录时清除所有文件缓存，避免不同用户数据混淆
+    removeItem(StorageKeys.RESOURCES_CACHE_PUBLIC)
+    removeItem(StorageKeys.RESOURCES_CACHE_TIME_PUBLIC)
+    removeItem(StorageKeys.RESOURCES_CACHE_PERSONAL)
+    removeItem(StorageKeys.RESOURCES_CACHE_TIME_PERSONAL)
     router.push('/login')
   }
 }
