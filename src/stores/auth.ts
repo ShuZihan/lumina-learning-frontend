@@ -50,9 +50,11 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     removeItem(StorageKeys.TOKEN)
     removeItem(StorageKeys.USER)
-    // 退出登录时清理资源缓存
-    removeItem(StorageKeys.RESOURCES_CACHE)
-    removeItem(StorageKeys.RESOURCES_CACHE_TIME)
+    // 退出登录时清理所有资源缓存
+    removeItem(StorageKeys.RESOURCES_CACHE_PUBLIC)
+    removeItem(StorageKeys.RESOURCES_CACHE_TIME_PUBLIC)
+    removeItem(StorageKeys.RESOURCES_CACHE_PERSONAL)
+    removeItem(StorageKeys.RESOURCES_CACHE_TIME_PERSONAL)
   }
 
   // 初始化时如果有 token 就在后台静默刷新用户信息
