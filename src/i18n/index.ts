@@ -1,4 +1,5 @@
 import { createI18n, I18n } from 'vue-i18n'
+import { StorageKeys, getItem, setItem } from '../utils/storage'
 
 // 预加载默认语言（zh-CN），体积极小直接打包
 import zhCN from './locales/zh-CN.json'
@@ -10,7 +11,7 @@ let i18nInstance: I18n | null = null
  * 检测用户当前语言
  */
 export function detectLocale(): string {
-  const saved = localStorage.getItem('lumina-lang')
+  const saved = getItem<string>(StorageKeys.LANG)
   if (saved === 'zh-CN' || saved === 'en-US') return saved
 
   const lang = navigator.language || 'zh-CN'
@@ -36,14 +37,14 @@ export async function setLocale(lang: string) {
   if (!i18nInstance) throw new Error('i18n not initialized')
   if (loadedLocales.has(lang)) {
     ;(i18nInstance.global.locale as any).value = lang
-    localStorage.setItem('lumina-lang', lang)
+    setItem(StorageKeys.LANG, lang)
     return
   }
   const messages = await loadLocaleMessages(lang)
   i18nInstance.global.setLocaleMessage(lang, messages)
   loadedLocales.add(lang)
   ;(i18nInstance.global.locale as any).value = lang
-  localStorage.setItem('lumina-lang', lang)
+  setItem(StorageKeys.LANG, lang)
 }
 
 /**
