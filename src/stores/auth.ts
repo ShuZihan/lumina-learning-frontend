@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getApiUrl } from '../utils/api'
+import { StorageKeys, getItem, setItem, removeItem } from '../utils/storage'
 
 export interface User {
   id: string
@@ -12,11 +13,11 @@ export interface User {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref<string | null>(localStorage.getItem('token'))
+  const token = ref<string | null>(getItem(StorageKeys.TOKEN))
 
   // 从缓存恢复用户信息，避免刷新时出现短暂空白
-  const cachedUser = localStorage.getItem('user')
-  const user = ref<User | null>(cachedUser ? JSON.parse(cachedUser) : null)
+  const cachedUser = getItem<User>(StorageKeys.USER)
+  const user = ref<User | null>(cachedUser)
 
   const isAuthenticated = computed(() => !!token.value)
   const isAdmin = computed(() => user.value?.role === 'admin')
@@ -24,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   function setToken(newToken: string) {
     token.value = newToken
-    localStorage.setItem('token', newToken)
+    setItem(StorageKeys.TOKEN, newToken)
   }
 
   async function fetchUser() {
@@ -35,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
       })
       if (resp.ok) {
         user.value = await resp.json()
-        localStorage.setItem('user', JSON.stringify(user.value))
+        setItem(StorageKeys.USER, user.value)
       } else {
         logout()
       }
@@ -47,8 +48,11 @@ export const useAuthStore = defineStore('auth', () => {
   function logout() {
     token.value = null
     user.value = null
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    removeItem(StorageKeys.TOKEN)
+    removeItem(StorageKeys.USER)
+    // 退出登录时清理资源缓存
+    removeItem(StorageKeys.RESOURCES_CACHE)
+    removeItem(StorageKeys.RESOURCES_CACHE_TIME)
   }
 
   // 初始化时如果有 token 就在后台静默刷新用户信息
