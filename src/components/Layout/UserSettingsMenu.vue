@@ -23,7 +23,7 @@
     >
       <div class="px-4 py-2 border-b border-gray-100 mb-1">
         <p class="text-sm font-medium text-gray-800 truncate">{{ auth.user?.nickname || '用户' }}</p>
-        <p class="text-xs text-gray-500 truncate">{{ auth.user?.email || '' }}</p>
+        <p class="text-xs text-gray-500 truncate capitalize">{{ auth.user?.role || '' }}</p>
       </div>
       <button
         @click="handleLogout"

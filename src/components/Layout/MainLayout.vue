@@ -74,7 +74,7 @@ import { useAuthStore } from '../../stores/auth'
 import { setLocale } from '../../i18n'
 import UserSettingsMenu from './UserSettingsMenu.vue'
 
-const { t, locale } = useI18n()
+const { locale } = useI18n()
 const auth = useAuthStore()
 
 const toggleLocale = () => setLocale(locale.value === 'zh-CN' ? 'en-US' : 'zh-CN')
