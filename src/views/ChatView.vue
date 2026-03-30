@@ -137,7 +137,7 @@ const onAnalysisStart = async (filename: string, analysisType: string) => {
   initialMessage.value = ''
 
   try {
-    const response = await fetch(getApiUrl('/api/analyze'), {
+    const response = await fetch(getApiUrl('/analyze'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify({ filename, analysis_type: analysisType }),

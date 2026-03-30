@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full px-0 md:px-10 lg:px-28 bg-white min-w-0 overflow-x-hidden">
+  <div class="flex flex-col h-full px-0 md:px-10 lg:px-28 bg-gray-50 min-w-0 overflow-x-hidden">
     <!-- 顶栏 -->
     <div class="flex items-center justify-between px-0 py-3 shrink-0">
       <div class="min-w-0">
@@ -35,7 +35,7 @@
     </div>
 
     <!-- 消息列表 -->
-    <div ref="messagesEl" class="flex-1 overflow-y-auto overflow-x-hidden pl-4 pr-0 md:pl-0 md:pr-0 py-0 space-y-5 min-h-0 min-w-0 bg-white">
+    <div ref="messagesEl" class="flex-1 overflow-y-auto overflow-x-hidden pl-4 pr-0 md:pl-0 md:pr-0 py-0 space-y-5 min-h-0 min-w-0 bg-gray-50">
 
       <!-- 未开始分析时：居中显示三张功能卡片 -->
       <div v-if="messages.length === 0 && !loading && !responding" class="flex flex-col items-center justify-center h-full gap-6 py-4">
@@ -190,7 +190,7 @@
     </div>
 
     <!-- 淡入淡出分隔效果 -->
-    <div class="h-4 bg-gradient-to-b from-transparent to-white"></div>
+    <div class="h-4 bg-gradient-to-b from-transparent to-gray-50"></div>
 
     <!-- 输入区 -->
     <div class="shrink-0 px-0 pt-0 pb-0">
@@ -349,7 +349,7 @@ const sendMessage = async () => {
   responding.value = true
   const aiMsgId = (Date.now() + 1).toString()
   try {
-    const resp = await fetch(getApiUrl('/api/chat'), {
+    const resp = await fetch(getApiUrl('/chat'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify({
