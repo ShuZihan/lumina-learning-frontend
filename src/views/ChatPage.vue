@@ -29,13 +29,11 @@ import ResourceSelector from '../components/ResourceSelector.vue'
 import ChatPanel from '../components/ChatPanel.vue'
 import { getApiUrl, getAuthHeaders } from '../utils/api'
 import { useAuthStore } from '../stores/auth'
-import { removeItem, StorageKeys } from '../utils/storage'
 
 const { t } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 
-const sidebarRef = ref<{ toggle: () => void } | null>(null)
 const selectedResource = ref<string | null>(null)
 const selectedResourceName = ref('')
 const selectedAnalysisType = ref<string | null>(null)
