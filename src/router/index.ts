@@ -14,9 +14,30 @@ const router = createRouter({
     },
     {
       path: '/',
-      component: () => import('../views/ChatView.vue'),
-      // 首页对所有角色可见，但部分功能需要登录
-      meta: { requiresAuth: false },
+      component: () => import('../components/Layout/MainLayout.vue'),
+      children: [
+        {
+          path: '',
+          component: () => import('../views/ChatPage.vue'),
+          // 首页对所有角色可见，但部分功能需要登录
+          meta: { requiresAuth: false },
+        },
+        {
+          path: 'dashboard',
+          component: () => import('../views/Dashboard.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'projects/:projectId',
+          component: () => import('../views/ProjectDetail.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'join/:code',
+          component: () => import('../views/JoinView.vue'),
+          meta: { requiresAuth: true },
+        },
+      ]
     },
   ],
 })

@@ -31,7 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function fetchUser() {
     if (!token.value) return
     try {
-      const resp = await fetch(getApiUrl('/api/auth/me'), {
+      const resp = await fetch(getApiUrl('/auth/me'), {
         headers: { Authorization: `Bearer ${token.value}` },
       })
       if (resp.ok) {
